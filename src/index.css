@@ -1,11 +1,21 @@
 @font-face {
   font-family: "Pretendard-Medium";
   font-weight: normal;
-  src: url("./fonts/Pretendard-Medium.ttf") format("truetype");
+  src: url("fonts/Pretendard-Medium.ttf") format("truetype");
 }
 
 body {
-  font-family: "Pretendard-Medium";
+  font-family: "Pretendard-Medium", sans-serif;
+}
+
+* {
+  font-family: "Pretendard-Medium", sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
 /* :root {
