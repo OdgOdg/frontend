@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 import { GoPersonAdd } from "react-icons/go";
 
 interface HeaderProps {
@@ -8,10 +9,12 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false }) => {
+
   return (
     <NavBar>
       <BackButton onClick={() => window.history.back()}>{`<`}</BackButton>
       <Title>{title}</Title>
+
       <IconContainer>
         {showAddFriendIcon && (
           <Icon>
@@ -19,6 +22,8 @@ const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false }) => 
           </Icon>
         )}
       </IconContainer>
+
+
     </NavBar>
   );
 };
