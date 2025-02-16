@@ -9,6 +9,9 @@ import DeleteAccountPage from "./pages/SettingPage/DeleteAccountPage.tsx";
 import LanguageSelectionPage from "./pages/SettingPage/LanguageSelectionPage.tsx";
 import PasswordChangeSuccess from "./pages/SettingPage/PasswordChangeSuccessPage.tsx";
 import DeleteAccountSuccessPage from "./pages/SettingPage/DeleteAccountSuccessPage.tsx.tsx";
+import ChatRoomList from "./pages/chatPage/ChatRoomList.tsx";
+import AddFriendPage from "./pages/chatPage/AddFriendPage.tsx";
+import FindFriendPage from "./pages/chatPage/FindFriendPage.tsx";
 
 function AppLayout() {
   return (
@@ -33,6 +36,9 @@ function App() {
             <Route path="/LanguageSelectionPage" element={<LanguageSelectionPage />} />
             <Route path="/PasswordChangeSuccess" element={<PasswordChangeSuccess />} />
             <Route path="/DeleteAccountSuccessPage" element={<DeleteAccountSuccessPage />} />
+            <Route path="/ChatRoomList" element={<ChatRoomList />} />
+            <Route path="/AddFriendPage" element={<AddFriendPage />} />
+            <Route path="/FindFriendPage" element={<FindFriendPage />} />
           </Route>
         </Routes>
       </Router>

@@ -63,3 +63,4 @@ const Icon = styled.div`
   font-size: 30px; // 아이콘 크기 조정가능
   padding-top: 10px;
 `;
+
