@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-
 import { GoPersonAdd } from "react-icons/go";
 
 interface HeaderProps {
@@ -9,12 +8,10 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false }) => {
-
   return (
     <NavBar>
       <BackButton onClick={() => window.history.back()}>{`<`}</BackButton>
       <Title>{title}</Title>
-
       <IconContainer>
         {showAddFriendIcon && (
           <Icon>
@@ -22,8 +19,6 @@ const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false }) => 
           </Icon>
         )}
       </IconContainer>
-
-
     </NavBar>
   );
 };
@@ -68,3 +63,4 @@ const Icon = styled.div`
   font-size: 30px; // 아이콘 크기 조정가능
   padding-top: 10px;
 `;
+
