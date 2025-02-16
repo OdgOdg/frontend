@@ -63,7 +63,6 @@ const NavbarItem = styled.div`
   justify-content: center;
   color: #999;
   cursor: pointer;
-
   &.active {
     color: #00aa5b;
   }

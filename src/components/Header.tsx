@@ -1,15 +1,29 @@
 import React from "react";
 import styled from "styled-components";
 
+import { GoPersonAdd } from "react-icons/go";
+
 interface HeaderProps {
   title: string;
+  showAddFriendIcon?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ title }) => {
+const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false }) => {
+
   return (
     <NavBar>
       <BackButton onClick={() => window.history.back()}>{`<`}</BackButton>
       <Title>{title}</Title>
+
+      <IconContainer>
+        {showAddFriendIcon && (
+          <Icon>
+            <GoPersonAdd />
+          </Icon>
+        )}
+      </IconContainer>
+
+
     </NavBar>
   );
 };
@@ -42,4 +56,15 @@ const BackButton = styled.button`
 const Title = styled.h1`
   font-size: 18px;
   font-weight: bold;
+`;
+
+const IconContainer = styled.div`
+  position: absolute;
+  right: 16px;
+`;
+
+const Icon = styled.div`
+  cursor: pointer;
+  font-size: 30px; // 아이콘 크기 조정가능
+  padding-top: 10px;
 `;
