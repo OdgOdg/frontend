@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import React from "react";
 import styled from "styled-components";
 import { IconType } from "react-icons";
@@ -44,7 +43,7 @@ const BottomNavbar: React.FC = () => {
 };
 
 const Navbar = styled.div`
-  position: relative;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
