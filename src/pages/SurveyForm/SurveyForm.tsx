@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
-  font-family: Arial, sans-serif;
   width: 320px;
   height: 568px;
   margin: auto;

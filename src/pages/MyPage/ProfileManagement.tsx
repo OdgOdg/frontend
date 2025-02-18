@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Header from "../../components/Header";
+import BottomNavbar from "../../components/BottomNavbar";
 import { FaCamera, FaHome, FaCalendarAlt, FaCommentDots, FaBell, FaCog } from 'react-icons/fa';
 
 const ProfileContainer = styled.div`
-  width: 320px;
-  height: 568px;
+  width: 100%;
+  max-width: 400px;
   margin: auto;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 100vh;
 `;
 
 const ProfileImageWrapper = styled.div`
@@ -92,46 +92,51 @@ const ProfileManagement = () => {
   };
 
   return (
-    <ProfileContainer>
+    <>
+      <Header title="프로필 관리" />
+      <ProfileContainer>
 
 
-      {/* Profile Image */}
-      <ProfileImageWrapper>
-        <ProfileImage>
-          <FaCamera size={20} />
-        </ProfileImage>
-      </ProfileImageWrapper>
+        {/* Profile Image */}
+        <ProfileImageWrapper>
+          <ProfileImage>
+            <FaCamera size={20} />
+          </ProfileImage>
+        </ProfileImageWrapper>
 
-      {/* Inputs */}
-      <InputContainer>
-        <label>이름</label>
-        <input
-          type="text"
-          placeholder="이름"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </InputContainer>
+        {/* Inputs */}
+        <InputContainer>
+          <label>이름</label>
+          <input
+            type="text"
+            placeholder="이름"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </InputContainer>
 
-      <InputContainer>
-        <label>소개글</label>
-        <input
-          type="text"
-          placeholder="소개글을 입력해주세요"
-          value={intro}
-          onChange={(e) => setIntro(e.target.value)}
-        />
-      </InputContainer>
+        <InputContainer>
+          <label>소개글</label>
+          <input
+            type="text"
+            placeholder="소개글을 입력해주세요"
+            value={intro}
+            onChange={(e) => setIntro(e.target.value)}
+          />
+        </InputContainer>
 
-      <InputContainer>
-        <label>학교 이메일</label>
-        <div className="email">20201532@inu.ac.kr</div>
-      </InputContainer>
+        <InputContainer>
+          <label>학교 이메일</label>
+          <div className="email">20201532@inu.ac.kr</div>
+        </InputContainer>
 
-      {/* Save Button */}
-      <SaveButton onClick={handleSave}>저장하기</SaveButton>
+        {/* Save Button */}
+        <SaveButton onClick={handleSave}>저장하기</SaveButton>
 
-    </ProfileContainer>
+      </ProfileContainer>
+      <BottomNavbar />
+
+    </>
   );
 };
 
