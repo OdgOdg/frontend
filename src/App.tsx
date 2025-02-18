@@ -11,6 +11,8 @@ import PasswordChangeSuccess from "./pages/SettingPage/PasswordChangeSuccessPage
 import DeleteAccountSuccessPage from "./pages/SettingPage/DeleteAccountSuccessPage.tsx.tsx";
 import ChatRoomList from "./pages/chatPage/ChatRoomList.tsx";
 import AddFriendPage from "./pages/chatPage/AddFriendPage.tsx";
+import ProfileManagement from "./pages/MyPage/Profilemanagement.tsx";
+import SurveyForm from "./pages/SurveyForm/Surveyform.tsx";
 
 function AppLayout() {
   return (
@@ -37,6 +39,8 @@ function App() {
             <Route path="/DeleteAccountSuccess" element={<DeleteAccountSuccessPage />} />
             <Route path="/ChatRoomList" element={<ChatRoomList />} />
             <Route path="/AddFriend" element={<AddFriendPage />} />
+            <Route path="/ProfileManagement" element={<ProfileManagement />} />
+            <Route path="/SurveyForm" element={<SurveyForm />} />
           </Route>
         </Routes>
       </Router>
