@@ -15,6 +15,7 @@ import ProfileManagement from "./pages/MyPage/ProfileManagement.tsx";
 import SurveyForm from "./pages/SurveyForm/SurveyForm.tsx";
 import EventListPage from "./pages/ListPage/EventListPage.tsx";
 import ChatBotPage from "./pages/ChatBotPage.tsx";
+import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
 
 function AppLayout() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/SurveyForm" element={<SurveyForm />} />
             <Route path="/EventList" element={<EventListPage />} />
             <Route path="/ChatBot" element={<ChatBotPage />} />
+            <Route path="/ChatRoom" element={<ChatRoomPage />} />
           </Route>
         </Routes>
       </Router>
