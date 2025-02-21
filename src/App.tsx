@@ -11,8 +11,9 @@ import PasswordChangeSuccess from "./pages/SettingPage/PasswordChangeSuccessPage
 import DeleteAccountSuccessPage from "./pages/SettingPage/DeleteAccountSuccessPage.tsx.tsx";
 import ChatRoomList from "./pages/chatPage/ChatRoomList.tsx";
 import AddFriendPage from "./pages/chatPage/AddFriendPage.tsx";
-import ProfileManagement from "./pages/MyPage/Profilemanagement.tsx";
-import SurveyForm from "./pages/SurveyForm/Surveyform.tsx";
+import ProfileManagement from "./pages/MyPage/ProfileManagement.tsx";
+import SurveyForm from "./pages/SurveyForm/SurveyForm.tsx";
+import EventListPage from "./pages/ListPage/EventListPage.tsx";
 
 function AppLayout() {
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="/AddFriend" element={<AddFriendPage />} />
             <Route path="/ProfileManagement" element={<ProfileManagement />} />
             <Route path="/SurveyForm" element={<SurveyForm />} />
+            <Route path="/EventList" element={<EventListPage />} />
           </Route>
         </Routes>
       </Router>
