@@ -5,6 +5,7 @@ import { sampleEvents } from './EventData';
 import ToggleMenu from './EventToggle';
 import { CiCirclePlus } from 'react-icons/ci';
 import { useSwipeable } from 'react-swipeable';
+import BottomNavbar from "../../components/BottomNavbar";
 
 interface CalendarProps {
   year: number;
@@ -209,77 +210,80 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   });
 
   return (
-    <CalendarContainer>
-      {/* 달력 헤더 */}
-      <CalendarHeader>
-        <MonthYearText>
-          {`${monthLabels[currentMonth - 1]} ${currentYear}`}
-        </MonthYearText>
-      </CalendarHeader>
+    <>
+      <CalendarContainer>
+        {/* 달력 헤더 */}
+        <CalendarHeader>
+          <MonthYearText>
+            {`${monthLabels[currentMonth - 1]} ${currentYear}`}
+          </MonthYearText>
+        </CalendarHeader>
 
-      {/* 요일 헤더 */}
-      <WeekdaysRow>
-        {weekdayLabels.map((label) => (
-          <WeekdayCell key={label} isSunday={label === 'Sun'}>
-            {label}
-          </WeekdayCell>
-        ))}
-      </WeekdaysRow>
-
-      {/* 날짜 셀 */}
-      <div {...handlers}>
-        <CalendarGrid>
-          {daysArray.map((day, idx) => {
-            const isCurrentMonth = day.getMonth() === currentMonth - 1;
-            const isToday = checkIsToday(day);
-            const isSelected = selectedDate && selectedDate.getTime() === day.getTime();
-            const dailyEvents = getEventsByDate(day);
-
-            return (
-              <DayCell
-                key={idx}
-                isCurrentMonth={isCurrentMonth}
-                isToday={isToday}
-                isSelected={!!isSelected}
-                onClick={() => handleDayClick(day)}
-              >
-                {day.getDate()}
-                {/* 날짜 셀 내부 이벤트 태그 표시 */}
-                {dailyEvents.length > 0 && (
-                  <EventWrapper>
-                    {dailyEvents.map((ev, i) => (
-                      <EventTag key={i} isOriginal={ev.isOriginal}>
-                        {ev.title}
-                      </EventTag>
-                    ))}
-                  </EventWrapper>
-                )}
-              </DayCell>
-            );
-          })}
-        </CalendarGrid>
-      </div>
-
-      {/* 선택된 날짜의 이벤트를 ToggleMenu(가로배치)로 렌더링 */}
-      {selectedEvents.length > 0 && selectedDate && (
-        <ToggleMenusWrapper>
-          {selectedEvents.map((ev, i) => (
-            <ToggleMenu
-              key={i}
-              leftLabel={ev.time}
-              rightLabel={ev.title}
-              onClickArrow={() => alert(`"${ev.title}" 화살표 클릭!`)}
-              isOriginal={ev.isOriginal}
-            />
+        {/* 요일 헤더 */}
+        <WeekdaysRow>
+          {weekdayLabels.map((label) => (
+            <WeekdayCell key={label} isSunday={label === 'Sun'}>
+              {label}
+            </WeekdayCell>
           ))}
-        </ToggleMenusWrapper>
-      )}
+        </WeekdaysRow>
 
-      {/* ADDED: 우측 하단 플로팅 버튼 */}
-      <FloatingButton onClick={handleAddEvent}>
-        <CiCirclePlus size={30} />
-      </FloatingButton>
-    </CalendarContainer>
+        {/* 날짜 셀 */}
+        <div {...handlers}>
+          <CalendarGrid>
+            {daysArray.map((day, idx) => {
+              const isCurrentMonth = day.getMonth() === currentMonth - 1;
+              const isToday = checkIsToday(day);
+              const isSelected = selectedDate && selectedDate.getTime() === day.getTime();
+              const dailyEvents = getEventsByDate(day);
+
+              return (
+                <DayCell
+                  key={idx}
+                  isCurrentMonth={isCurrentMonth}
+                  isToday={isToday}
+                  isSelected={!!isSelected}
+                  onClick={() => handleDayClick(day)}
+                >
+                  {day.getDate()}
+                  {/* 날짜 셀 내부 이벤트 태그 표시 */}
+                  {dailyEvents.length > 0 && (
+                    <EventWrapper>
+                      {dailyEvents.map((ev, i) => (
+                        <EventTag key={i} isOriginal={ev.isOriginal}>
+                          {ev.title}
+                        </EventTag>
+                      ))}
+                    </EventWrapper>
+                  )}
+                </DayCell>
+              );
+            })}
+          </CalendarGrid>
+        </div>
+
+        {/* 선택된 날짜의 이벤트를 ToggleMenu(가로배치)로 렌더링 */}
+        {selectedEvents.length > 0 && selectedDate && (
+          <ToggleMenusWrapper>
+            {selectedEvents.map((ev, i) => (
+              <ToggleMenu
+                key={i}
+                leftLabel={ev.time}
+                rightLabel={ev.title}
+                onClickArrow={() => alert(`"${ev.title}" 화살표 클릭!`)}
+                isOriginal={ev.isOriginal}
+              />
+            ))}
+          </ToggleMenusWrapper>
+        )}
+
+        {/* ADDED: 우측 하단 플로팅 버튼 */}
+        <FloatingButton onClick={handleAddEvent}>
+          <CiCirclePlus size={30} />
+        </FloatingButton>
+      </CalendarContainer>
+      <BottomNavbar />
+    </>
   );
 };
 
