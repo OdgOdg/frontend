@@ -17,6 +17,7 @@ import EventListPage from "./pages/ListPage/EventListPage.tsx";
 import ChatBotPage from "./pages/ChatBotPage.tsx";
 import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
 import AddSchedule from "./pages/AddSchedule.tsx"
+import Calendar from "./pages/CalendarPage/Calendar.tsx"
 
 function AppLayout() {
   return (
@@ -49,6 +50,10 @@ function App() {
             <Route path="/ChatBot" element={<ChatBotPage />} />
             <Route path="/ChatRoom" element={<ChatRoomPage />} />
             <Route path="/AddSchedule" element={<AddSchedule />} />
+            <Route path="/Calendar" element={<Calendar
+              year={2025}
+              month={2}
+            />} />
           </Route>
         </Routes>
       </Router>
