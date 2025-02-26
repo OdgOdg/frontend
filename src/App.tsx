@@ -16,7 +16,7 @@ import SurveyForm from "./pages/SurveyForm/SurveyForm.tsx";
 import EventListPage from "./pages/ListPage/EventListPage.tsx";
 import ChatBotPage from "./pages/ChatBotPage.tsx";
 import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
-import AddSchedule from "./pages/AddSchedule.tsx"
+import AddSchedule from "./pages/CalendarPage/AddSchedule.tsx"
 import Calendar from "./pages/CalendarPage/Calendar.tsx"
 
 function AppLayout() {
@@ -36,21 +36,21 @@ function App() {
         <Routes>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<MainPage />} />
-            <Route path="/Settings" element={<SettingsPage />} />
-            <Route path="/PasswordChange" element={<PasswordChange />} />
-            <Route path="/DeleteAccount" element={<DeleteAccountPage />} />
-            <Route path="/LanguageSelection" element={<LanguageSelectionPage />} />
-            <Route path="/PasswordChangeSuccess" element={<PasswordChangeSuccess />} />
-            <Route path="/DeleteAccountSuccess" element={<DeleteAccountSuccessPage />} />
-            <Route path="/ChatRoomList" element={<ChatRoomList />} />
-            <Route path="/AddFriend" element={<AddFriendPage />} />
-            <Route path="/ProfileManagement" element={<ProfileManagement />} />
-            <Route path="/SurveyForm" element={<SurveyForm />} />
-            <Route path="/EventList" element={<EventListPage />} />
-            <Route path="/ChatBot" element={<ChatBotPage />} />
-            <Route path="/ChatRoom" element={<ChatRoomPage />} />
-            <Route path="/AddSchedule" element={<AddSchedule />} />
-            <Route path="/Calendar" element={<Calendar
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/passwordchange" element={<PasswordChange />} />
+            <Route path="/deleteaccount" element={<DeleteAccountPage />} />
+            <Route path="/languageselection" element={<LanguageSelectionPage />} />
+            <Route path="/passwordchangesuccess" element={<PasswordChangeSuccess />} />
+            <Route path="/deleteaccountsuccess" element={<DeleteAccountSuccessPage />} />
+            <Route path="/chatroomlist" element={<ChatRoomList />} />
+            <Route path="/addfriend" element={<AddFriendPage />} />
+            <Route path="/profilemanagement" element={<ProfileManagement />} />
+            <Route path="/surveyform" element={<SurveyForm />} />
+            <Route path="/eventlist" element={<EventListPage />} />
+            <Route path="/chatbot" element={<ChatBotPage />} />
+            <Route path="/chatroom" element={<ChatRoomPage />} />
+            <Route path="/addschedule" element={<AddSchedule />} />
+            <Route path="/calendar" element={<Calendar
               year={2025}
               month={2}
             />} />
