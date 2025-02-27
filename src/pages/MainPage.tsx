@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import { FaHeart } from "react-icons/fa";
 import { MdArticle } from "react-icons/md";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import eventImage from "../images/mainPage/event.png";
 import sightsImage from "../images/mainPage/sights.png";
 import BottomNavbar from "../components/BottomNavbar";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 const MainPage: React.FC = () => {
   const [banners, setBanners] = useState([
@@ -13,28 +14,30 @@ const MainPage: React.FC = () => {
       title: "포스코타워 수직 마라톤",
       location: "포스코타워",
       date: "2024.8.23 - 8.31",
-      isFavorite: false, // 배너별 즐겨찾기 상태
-    },
-    {
-      image: eventImage,
-      title: "두 번째 배너",
-      location: "설명 텍스트",
-      date: "날짜 정보",
       isFavorite: false,
     },
-    {
-      image: eventImage,
-      title: "세 번째 배너",
-      location: "설명 텍스트",
-      date: "날짜 정보",
-      isFavorite: false,
-    },
+    { image: eventImage, title: "두 번째 배너", location: "설명 텍스트", date: "날짜 정보", isFavorite: false },
+    { image: eventImage, title: "세 번째 배너", location: "설명 텍스트", date: "날짜 정보", isFavorite: false },
   ]);
+
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   const toggleFavorite = (index: number) => {
     setBanners((prevBanners) =>
       prevBanners.map((banner, i) => (i === index ? { ...banner, isFavorite: !banner.isFavorite } : banner))
     );
+  };
+
+  const scrollLeft = () => {
+    if (bannerRef.current) {
+      bannerRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (bannerRef.current) {
+      bannerRef.current.scrollBy({ left: 300, behavior: "smooth" });
+    }
   };
 
   return (
@@ -50,7 +53,10 @@ const MainPage: React.FC = () => {
           <More>전체보기 &gt;</More>
         </SectionHeader>
         <Banner>
-          <BannerWrapper>
+          <ArrowLeft onClick={scrollLeft}>
+            <FaChevronLeft />
+          </ArrowLeft>
+          <BannerWrapper ref={bannerRef}>
             {banners.map((banner, index) => (
               <BannerItem key={index}>
                 <FavoriteIcon onClick={() => toggleFavorite(index)} $isFavorite={banner.isFavorite}>
@@ -67,6 +73,9 @@ const MainPage: React.FC = () => {
               </BannerItem>
             ))}
           </BannerWrapper>
+          <ArrowRight onClick={scrollRight}>
+            <FaChevronRight />
+          </ArrowRight>
         </Banner>
       </Section>
       <Divider />
@@ -104,9 +113,6 @@ const MainPage: React.FC = () => {
 export default MainPage;
 
 // Styled Components
-const Container = styled.div`
-  padding: 16px;
-`;
 
 const MainPageHeader = styled.header`
   display: flex;
@@ -152,34 +158,6 @@ const More = styled.span`
   cursor: pointer;
 `;
 
-const Banner = styled.div`
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-`;
-
-const BannerWrapper = styled.div`
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  gap: 10px;
-  scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
-  &::-webkit-scrollbar {
-    display: none; /* 크롬, 사파리에서 스크롤바 숨김 */
-  }
-`;
-
-const BannerItem = styled.div`
-  flex: 0 0 100%;
-  scroll-snap-align: start;
-  position: relative;
-`;
-
-const BannerImage = styled.img`
-  width: 100%;
-`;
-
 const GradientOverlayTop = styled.div`
   position: absolute;
   top: 0;
@@ -213,21 +191,6 @@ const BannerText = styled.div`
   p {
     margin: 0;
   }
-`;
-
-const Indicator = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-`;
-
-const Dot = styled.div<{ active: boolean }>`
-  width: 10px;
-  height: 10px;
-  margin: 0 5px;
-  border-radius: 50%;
-  background-color: ${({ active }) => (active ? "#007bff" : "#e0e0e0")};
-  cursor: pointer;
 `;
 
 const TouristList = styled.div`
@@ -303,4 +266,81 @@ const Divider = styled.div`
   height: 1px;
   background-color: #e0e0e0;
   margin: 20px 0;
+`;
+
+const Container = styled.div`
+  padding: 16px;
+`;
+
+const ArrowLeft = styled.button`
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.6); // 반투명 배경
+  color: #007bff; // 아이콘 색상
+  border: none; // 테두리 없음
+  border-radius: 50%; // 둥근 모서리
+  cursor: pointer;
+  padding: 12px; // 패딩 조정
+  z-index: 2;
+  transition:
+    background 0.3s,
+    transform 0.3s; // 부드러운 전환 효과
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.8); // 호버 시 배경색 변경
+    transform: translateY(-50%) scale(1.1); // 호버 시 크기 증가
+  }
+`;
+
+const ArrowRight = styled.button`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.6); // 반투명 배경
+  color: #007bff; // 아이콘 색상
+  border: none; // 테두리 없음
+  border-radius: 50%; // 둥근 모서리
+  cursor: pointer;
+  padding: 12px; // 패딩 조정
+  z-index: 2;
+  transition:
+    background 0.3s,
+    transform 0.3s; // 부드러운 전환 효과
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.8); // 호버 시 배경색 변경
+    transform: translateY(-50%) scale(1.1); // 호버 시 크기 증가
+  }
+`;
+
+const Banner = styled.div`
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+`;
+
+const BannerWrapper = styled.div`
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 10px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scroll-behavior: smooth;
+`;
+
+const BannerItem = styled.div`
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  position: relative;
+`;
+
+const BannerImage = styled.img`
+  width: 100%;
 `;
