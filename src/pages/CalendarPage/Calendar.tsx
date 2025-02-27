@@ -95,7 +95,7 @@ const EventTag = styled.div<{ isOriginal?: boolean }>`
   font-size: 0.5rem;
   padding: 0.2rem 0.4rem;
   margin-top: 0.3rem;
-  text-align: left;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -110,9 +110,9 @@ const ToggleMenusWrapper = styled.div`
 `;
 
 const FloatingButton = styled.button`
-  position: absolute;
-  bottom : 5rem;
-  right : 28rem;
+  position : absolute;
+  bottom : 19.5rem;
+  right : 1rem;
   width: 36px;
   height: 36px;
   border: none;
@@ -125,6 +125,20 @@ const FloatingButton = styled.button`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 999;
+`;
+
+const NavigationContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
+
+const NavButton = styled.button`
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #333;
+  padding: 0.25rem;
 `;
 
 const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
@@ -217,6 +231,22 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
           <MonthYearText>
             {`${monthLabels[currentMonth - 1]} ${currentYear}`}
           </MonthYearText>
+          <NavigationContainer>
+            <NavButton
+              onClick={() =>
+                setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))
+              }
+            >
+              {"<"}
+            </NavButton>
+            <NavButton
+              onClick={() =>
+                setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))
+              }
+            >
+              {">"}
+            </NavButton>
+          </NavigationContainer>
         </CalendarHeader>
 
         {/* 요일 헤더 */}
