@@ -16,9 +16,9 @@ import SurveyForm from "./pages/SurveyForm/SurveyForm.tsx";
 import EventListPage from "./pages/ListPage/EventListPage.tsx";
 import ChatBotPage from "./pages/ChatBotPage.tsx";
 import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
-import AddSchedule from "./pages/CalendarPage/AddSchedule.tsx"
-import Calendar from "./pages/CalendarPage/Calendar.tsx"
-import MyProfile from "./pages/MyPage/Myprofile.tsx"
+import AddSchedule from "./pages/CalendarPage/AddSchedule.tsx";
+import Calendar from "./pages/CalendarPage/Calendar.tsx";
+import MyProfile from "./pages/MyPage/Myprofile.tsx";
 
 function AppLayout() {
   return (
@@ -51,10 +51,7 @@ function App() {
             <Route path="/chatbot" element={<ChatBotPage />} />
             <Route path="/chatroom" element={<ChatRoomPage />} />
             <Route path="/addschedule" element={<AddSchedule />} />
-            <Route path="/calendar" element={<Calendar
-              year={2025}
-              month={2}
-            />} />
+            <Route path="/calendar" element={<Calendar year={2025} month={2} />} />
             <Route path="/myprofile" element={<MyProfile />} />
           </Route>
         </Routes>

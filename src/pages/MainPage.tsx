@@ -15,20 +15,8 @@ const MainPage: React.FC = () => {
       date: "2024.8.23 - 8.31",
       isFavorite: false, // 배너별 즐겨찾기 상태
     },
-    {
-      image: eventImage,
-      title: "두 번째 배너",
-      location: "설명 텍스트",
-      date: "날짜 정보",
-      isFavorite: false,
-    },
-    {
-      image: eventImage,
-      title: "세 번째 배너",
-      location: "설명 텍스트",
-      date: "날짜 정보",
-      isFavorite: false,
-    },
+    { image: eventImage, title: "두 번째 배너", location: "설명 텍스트", date: "날짜 정보", isFavorite: false },
+    { image: eventImage, title: "세 번째 배너", location: "설명 텍스트", date: "날짜 정보", isFavorite: false },
   ]);
 
   const toggleFavorite = (index: number) => {

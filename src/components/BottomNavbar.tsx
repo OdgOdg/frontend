@@ -53,6 +53,8 @@ const Navbar = styled.div`
   height: 60px;
   background-color: #fff;
   border-top: 1px solid #eee;
+  margin: auto;
+  max-width: 580px;
 `;
 
 const NavbarItem = styled.div`
