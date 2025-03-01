@@ -19,6 +19,7 @@ import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
 import AddSchedule from "./pages/CalendarPage/AddSchedule.tsx";
 import Calendar from "./pages/CalendarPage/Calendar.tsx";
 import MyProfile from "./pages/MyPage/Myprofile.tsx";
+import TourSightListPage from "./pages/ListPage/TourSightListPage.tsx";
 
 function AppLayout() {
   return (
@@ -48,6 +49,7 @@ function App() {
             <Route path="/profilemanagement" element={<ProfileManagement />} />
             <Route path="/surveyform" element={<SurveyForm />} />
             <Route path="/eventlist" element={<EventListPage />} />
+            <Route path="/toursightlist" element={<TourSightListPage />} />
             <Route path="/chatbot" element={<ChatBotPage />} />
             <Route path="/chatroom" element={<ChatRoomPage />} />
             <Route path="/addschedule" element={<AddSchedule />} />
