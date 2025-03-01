@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { GoPersonAdd } from "react-icons/go";
 import chatbotImage from "../images/chatbot_icon.jpg";
 
+// title 타입을 React.ReactNode로 변경
 interface HeaderProps {
-  title: string;
+  title: React.ReactNode;
   showAddFriendIcon?: boolean;
   isChatBotPage?: boolean; // 챗봇 페이지 여부 추가
 }
