@@ -23,6 +23,10 @@ const ChatBotPage: React.FC = () => {
       text: "인천대학교 근처에는 바다 전망을 즐길 수 있는 카페들이 있습니다.\n케이슨24(Caisson24)\n인천 연수구, 대한민국\n인천대학교 바로 뒤편에 위치한 복합문화공간으로, 바다를 바라보며 커피와 베이커리를 즐길 수 있습니다. 야외 좌석과 다양한 문화 행사가 제공되며, 솔찬공원과 인접해 있어 산책하기에도 좋습니다.\n카페드라페(Café de Lape)\n인천 연수구, 대한민국\n송도에 위치한 카페로, 바다와 가까워 아름다운 전망을 제공합니다. 조용한 분위기에서 커피를 즐기며 휴식을 취하기에 좋습니다.\nSteemit\n이러한 카페들은 인천대학교 인근에서 바다 전망을 즐기며 휴식을 취하기에 좋은 장소들입니다.",
       isUser: false,
     },
+    {
+      text: "인천대학교 근처에는 바다 전망을 즐길 수 있는 카페들이 있습니다.\n케이슨24(Caisson24)\n인천 연수구, 대한민국\n인천대학교 바로 뒤편에 위치한 복합문화공간으로, 바다를 바라보며 커피와 베이커리를 즐길 수 있습니다. 야외 좌석과 다양한 문화 행사가 제공되며, 솔찬공원과 인접해 있어 산책하기에도 좋습니다.\n카페드라페(Café de Lape)\n인천 연수구, 대한민국\n송도에 위치한 카페로, 바다와 가까워 아름다운 전망을 제공합니다. 조용한 분위기에서 커피를 즐기며 휴식을 취하기에 좋습니다.\nSteemit\n이러한 카페들은 인천대학교 인근에서 바다 전망을 즐기며 휴식을 취하기에 좋은 장소들입니다.",
+      isUser: false,
+    },
   ]);
   const [input, setInput] = useState("");
 
@@ -68,10 +72,14 @@ const ChatContainer = styled.div`
 const ChatBody = styled.div`
   flex: 1;
   padding: 20px;
-  padding-bottom: 70px;
+  padding-bottom: 100px; /* 입력창 공간 확보 */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const ChatBubble = styled.div<{ isUser: boolean }>`
@@ -87,15 +95,22 @@ const ChatBubble = styled.div<{ isUser: boolean }>`
 
 const ChatInputContainer = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
   border-top: 1px solid #ccc;
   background: white;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-bottom: 70px;
+  bottom: 12%;
+  left: 50%;
+  transform: translate(-50%, 50%);
   border-radius: 50px;
+  width: 90%; /* 기본적으로 넓게 설정 */
+  max-width: 550px; /* 최대 너비 조정 */
+
+  @media (max-width: 768px) {
+    width: 85%; /* 태블릿 크기 */
+  }
 `;
 
 const ChatInput = styled.input`
