@@ -78,10 +78,14 @@ const ChatContainer = styled.div`
 const ChatBody = styled.div`
   flex: 1;
   padding: 20px;
-  padding-bottom: 70px;
+  padding-bottom: 70px; /* 입력창 공간 확보 */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const ChatBubble = styled.div<{ isUser: boolean }>`
@@ -102,15 +106,22 @@ const TimeStamp = styled.div`
 
 const ChatInputContainer = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
   border-top: 1px solid #ccc;
   background: white;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-bottom: 70px;
+  bottom: 12%;
+  left: 50%;
+  transform: translate(-50%, 50%);
   border-radius: 50px;
+  width: 90%; /* 기본적으로 넓게 설정 */
+  max-width: 550px; /* 최대 너비 조정 */
+
+  @media (max-width: 768px) {
+    width: 85%; /* 태블릿 크기 */
+  }
 `;
 
 const ChatInput = styled.input`
