@@ -55,6 +55,14 @@ const Container = styled.div`
   max-height: 100vh;
   overflow-y: auto;
   background-color: #f9f9f9;
+
+  /* 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none; /* 웹킷 브라우저에서 스크롤바 숨김 */
+  }
+
+  scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+  -ms-overflow-style: none; /* Internet Explorer 및 Edge에서 스크롤바 숨김 */
 `;
 
 const EventCard = styled.div`
@@ -68,6 +76,11 @@ const EventCard = styled.div`
   }
   p {
     margin: 8px;
+  }
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-5px);
   }
 `;
 
