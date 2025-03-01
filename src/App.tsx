@@ -21,6 +21,7 @@ import Calendar from "./pages/CalendarPage/Calendar.tsx";
 import MyProfile from "./pages/MyPage/Myprofile.tsx";
 import TourSightListPage from "./pages/ListPage/TourSightListPage.tsx";
 import IncomingCall from "./pages/chatPage/IncomingCall.tsx";
+import OutgoingCall from "./pages/chatPage/OutcomingCall.tsx";
 
 function AppLayout() {
   return (
@@ -57,6 +58,7 @@ function App() {
             <Route path="/calendar" element={<Calendar year={2025} month={2} />} />
             <Route path="/myprofile" element={<MyProfile />} />
             <Route path="/incomingcall" element={<IncomingCall />} />
+            <Route path="/outgoingcall" element={<OutgoingCall />} />
           </Route>
         </Routes>
       </Router>
