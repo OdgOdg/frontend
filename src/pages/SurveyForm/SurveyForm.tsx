@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 
+/* styled-components */
+
 const Container = styled.div`
-  width: 320px;
-  height: 568px;
-  margin: auto;
-  padding: 20px;
+  width: 90%;
+  padding : 16px;
+  margin: 0 auto;
   overflow: auto;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 const Title = styled.h2`
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
   margin-bottom: 20px;
 `;
@@ -23,14 +21,14 @@ const Section = styled.div`
 `;
 
 const Label = styled.div`
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   color: #ABABAB;
 `;
 
 const Select = styled.select`
-  width: 50%;
+  width: 40%;
   padding: 5px;
   font-size: 14px;
   border: 1px solid black;
@@ -55,7 +53,7 @@ const CheckboxInput = styled.input`
 `;
 
 const SubmitButton = styled.button`
-  width: 50%;
+  width: 60%;
   padding: 10px;
   font-size: 18px;
   color: white;
@@ -65,7 +63,12 @@ const SubmitButton = styled.button`
   cursor: pointer;
   display: block;
   margin: 0 auto;
+  &:hover {
+    opacity: 0.9;
+  }
 `;
+
+/* ------------------------- Component & Types ------------------------- */
 
 const options = {
   gender: ["MAN", "WOMEN"],

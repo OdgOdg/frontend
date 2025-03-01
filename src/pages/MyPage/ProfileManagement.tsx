@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from "../../components/Header";
 import BottomNavbar from "../../components/BottomNavbar";
-import { FaCamera, FaHome, FaCalendarAlt, FaCommentDots, FaBell, FaCog } from 'react-icons/fa';
+import { FaCamera } from 'react-icons/fa';
+
+/* styled-components */
 
 const ProfileContainer = styled.div`
-  width: 100%;
-  max-width: 400px;
+  width: 80%;
+  padding : 10px;
   margin: auto;
-  padding: 20px;
-  height: 100vh;
 `;
 
 const ProfileImageWrapper = styled.div`
@@ -47,7 +47,7 @@ const InputContainer = styled.div`
   }
 
   input {
-    width: 90%;
+    width: 100%;
     padding: 10px 0;
     border: none;
     border-bottom: 1px solid #ccc;
@@ -55,7 +55,7 @@ const InputContainer = styled.div`
 
     &:focus {
       outline: none;
-      border-bottom: 1px solid #00796b;
+      border-bottom: 1px solid #00AA5B;
     }
   }
 
@@ -67,21 +67,23 @@ const InputContainer = styled.div`
 `;
 
 const SaveButton = styled.button`
-  width: 50%;
-  padding: 10px;
+  width: 60%;
+  padding: 12px;
   font-size: 18px;
   color: white;
   background-color: #00AA5B;
   border: none;
-  border-radius: 20px;
+  border-radius: 50px;
   cursor: pointer;
   display: block;
   margin: 50px auto auto auto;
 
   &:hover {
-    background-color: #008a5a;
+    opacity:0.9;
   }
 `;
+
+/* ------------------------- Component & Types ------------------------- */
 
 const ProfileManagement = () => {
   const [name, setName] = useState('');

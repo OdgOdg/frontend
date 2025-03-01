@@ -1,13 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-interface EventToggleProps {
-  leftLabel: string;
-  rightLabel: string;
-  onClickArrow?: () => void;
-  isOriginal?: boolean;
-}
-
 const ToggleContainer = styled.div`
   display: inline-flex;
   align-items: center;
@@ -43,6 +36,15 @@ const Arrow = styled.span`
   margin-left: 0.5rem;
   cursor: pointer;
 `;
+
+/* ------------------------- Component & Types ------------------------- */
+
+interface EventToggleProps {
+  leftLabel: string;
+  rightLabel: string;
+  onClickArrow?: () => void;
+  isOriginal?: boolean;
+}
 
 const EventToggle: React.FC<EventToggleProps> = ({
   leftLabel,

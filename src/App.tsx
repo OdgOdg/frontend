@@ -23,6 +23,7 @@ import EventViewAtMap from "./pages/MapPage/EventViewAtMap.tsx"
 import TourSightListPage from "./pages/ListPage/TourSightListPage.tsx";
 import IncomingCall from "./pages/chatPage/IncomingCall.tsx";
 import OutgoingCall from "./pages/chatPage/OutcomingCall.tsx";
+import ReviewWrite from "./pages/ReviewPage/ReviewWrite.tsx"
 
 function AppLayout() {
   return (
@@ -61,6 +62,7 @@ function App() {
             <Route path="/eventviewatmap" element={<EventViewAtMap />} />
             <Route path="/incomingcall" element={<IncomingCall />} />
             <Route path="/outgoingcall" element={<OutgoingCall />} />
+            <Route path="/reviewwrite" element={<ReviewWrite />} />
           </Route>
         </Routes>
       </Router>
