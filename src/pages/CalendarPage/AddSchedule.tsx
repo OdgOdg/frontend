@@ -1,4 +1,3 @@
-// AddSchedule.tsx
 import React, { useState, FormEvent } from 'react';
 import styled from 'styled-components';
 import BottomNavbar from "../../components/BottomNavbar"
@@ -7,10 +6,10 @@ import Header from "../../components/Header"
 /* ---------------------------- Styled Components ---------------------------- */
 
 const Container = styled.div`
+  width : 85%;
   display: flex;
   flex-direction: column;
   padding: 16px;
-  max-width: 320px;
   margin: 0 auto;
 
 `;
@@ -89,7 +88,7 @@ const ToggleSlider = styled.span`
 const DateTimeContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;  // 두 요소 사이의 간격을 8px로 설정
+  gap: 4px; 
   margin-bottom: 16px;
 `;
 
@@ -137,21 +136,20 @@ const TextArea = styled.textarea`
 `;
 
 const SaveButton = styled.button`
-  width: 50%;
+  width: 60%;
   padding: 12px;
-  font-size: 16px;
+  font-size: 18px;
   background-color: #00AA5B;
   color: white;
   border: none;
   border-radius: 100px;
   cursor: pointer;
-  display: block; /* 블록 요소로 변경 */
-  margin: 0 auto; /* 좌우 중앙 정렬 */
-  &:active {
-    opacity: 0.8;
+  display: block; 
+  margin: 0 auto;
+  &:hover {
+    opacity: 0.9;
   }
 `;
-
 
 /* ------------------------- Component & Types ------------------------- */
 
@@ -183,7 +181,6 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
   ) => {
     const { name, value, type } = e.target;
     let val: string | boolean = value;
-    // 체크박스(토글)인 경우 boolean 값 처리
     if (type === 'checkbox') {
       val = (e.target as HTMLInputElement).checked;
     }
@@ -196,7 +193,6 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // 폼 제출 로직(예: API 요청) 작성
     console.log('저장된 데이터:', formData);
     alert('일정이 저장되었습니다!');
   };
@@ -270,8 +266,8 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
 
           <SaveButton type="submit">저장하기</SaveButton>
         </form>
-        <BottomNavbar />
       </Container>
+      <BottomNavbar />
     </>
   );
 };

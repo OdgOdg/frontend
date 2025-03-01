@@ -1,9 +1,7 @@
-// MyPage.tsx
 import React from 'react';
 import styled from 'styled-components';
 import { IoSettingsSharp } from 'react-icons/io5';
 import DefaultProfileImg from '../../images/MyPage/DefaultProfileImg.png'
-import ProfileImg from '../../images/MyPage/ProfileImg.jpg';
 import 송도센트럴파크 from '../../images/MyPage/송도센트럴파크.jpg';
 import 월미도 from '../../images/MyPage/월미도.jpg';
 import 개항장 from '../../images/MyPage/개항장.jpg';
@@ -13,23 +11,16 @@ import 을왕리해수욕장 from '../../images/MyPage/을왕리해수욕장.jpg
 import BottomNavbar from "../../components/BottomNavbar"
 import Header from "../../components/Header"
 
-// 전체 컨테이너 (position: relative 추가)
+/* styled-components */
+
 const Container = styled.div`
   width: 100%;
-  max-width: 400px; /* 모바일 기준 가로 폭 예시 */
   margin: 0 auto;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-`;
-
-// Settings 아이콘 컨테이너 (Header 아래, Container 오른쪽 상단)
-const SettingsIconWrapper = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
 `;
 
 const SettingsIconButton = styled.button`
@@ -41,8 +32,6 @@ const SettingsIconButton = styled.button`
   cursor: pointer;
 `;
 
-
-// 프로필 섹션
 const ProfileSection = styled.section`
   display: flex;
   flex-direction: column;
@@ -71,22 +60,24 @@ const UserDescription = styled.p`
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 50px;
+  gap: 30px;
 `;
 
-const ActionButton = styled.button`
+const Button = styled.button`
   flex: 1;
   width: 150px;
-  padding: 6px 10px;
+  padding: 8px 10px;
   font-size: 14px;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   background-color: #00AA5B;
   color: #ffffff;
+   &:hover {
+    opacity: 0.9;
+  }
 `;
 
-// 사진 그리드
 const PhotoGrid = styled.section`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -119,26 +110,29 @@ const PhotoLabel = styled.span`
   padding: 2px 0;
 `;
 
-// 프로필 관리 버튼
 const ProfileManagementButton = styled.button`
-  width: 200px;
+  width: 60%;
   margin: 12px auto;
-  padding: 10px 20px;
+  padding: 12px;
   border: none;
   background-color: #00AA5B;
   color: white;
   border-radius: 100px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
+  &:hover {
+    opacity: 0.9;
+  }
 `;
 
-// 메인 컴포넌트
+/* ------------------------- Component & Types ------------------------- */
+
 const MyProfile: React.FC = () => {
   return (
     <>
+      <Header title="마이페이지" />
       <Container>
-        <Header title="마이페이지" />
         {/* Header 아래에 오른쪽 상단 Settings 아이콘 */}
         <SettingsIconButton>
           <IoSettingsSharp size={24} color="#000" />
@@ -150,8 +144,8 @@ const MyProfile: React.FC = () => {
           <UserName>김지훈</UserName>
           <UserDescription>여행을 좋아하는 김지훈입니다.</UserDescription>
           <ButtonGroup>
-            <ActionButton>친구추가</ActionButton>
-            <ActionButton>메시지 보내기</ActionButton>
+            <Button>친구추가</Button>
+            <Button>메시지 보내기</Button>
           </ButtonGroup>
         </ProfileSection>
 
@@ -185,8 +179,8 @@ const MyProfile: React.FC = () => {
 
         {/* 프로필 관리 버튼 */}
         <ProfileManagementButton>프로필 관리</ProfileManagementButton>
-        <BottomNavbar />
       </Container>
+      <BottomNavbar />
     </>
 
   );

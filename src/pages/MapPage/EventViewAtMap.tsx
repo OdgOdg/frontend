@@ -16,7 +16,6 @@ import 송도센트럴파크4 from "../../images/MapPage/송도센트럴파크4.
 
 const Container = styled.div`
   width: 100%;
-  max-width: 400px;
   margin: 0 auto;
   padding: 30px;
   box-sizing: border-box;
@@ -180,14 +179,6 @@ const LeftInfo = styled.div`
   }
 `;
 
-const OperatingHoursDetails = styled.div<OperatingHoursDetailsProps>`
-  overflow: hidden;
-  max-height: ${({ expanded }) => (expanded ? '500px' : '0')};
-  opacity: ${({ expanded }) => (expanded ? 1 : 0)};
-  transform: translateY(${({ expanded }) => (expanded ? '0' : '-20px')});
-  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
-`;
-
 const OperatingHourItem = styled.div`
   display: flex;
   justify-content: space-between;
@@ -196,15 +187,9 @@ const OperatingHourItem = styled.div`
   color: #555;
 `;
 
-const operatingHours = [
-  { day: "월요일", hours: "휴무" },
-  { day: "화요일", hours: "24시간 영업" },
-  { day: "수요일", hours: "오전 06:00 ~ 오후 10:00" },
-  { day: "목요일", hours: "오전 08:00 ~ 오후 12:00" },
-  { day: "금요일", hours: "오전 06:00 ~ 오후 10:00" },
-  { day: "토요일", hours: "오전 08:00 ~ 오후 12:00" },
-  { day: "일요일", hours: "휴무" },
-];
+/* ------------------------- Component & Types ------------------------- */
+
+interface SongdoCentralParkProps { }
 
 interface OperatingHoursDetailsProps {
   expanded: boolean;
@@ -218,6 +203,25 @@ interface BookmarkProps {
   active: boolean;
 }
 
+const OperatingHoursDetails = styled.div<OperatingHoursDetailsProps>`
+  overflow: hidden;
+  max-height: ${({ expanded }) => (expanded ? '500px' : '0')};
+  opacity: ${({ expanded }) => (expanded ? 1 : 0)};
+  transform: translateY(${({ expanded }) => (expanded ? '0' : '-20px')});
+  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+`;
+
+const operatingHours = [
+  { day: "월요일", hours: "휴무" },
+  { day: "화요일", hours: "24시간 영업" },
+  { day: "수요일", hours: "오전 06:00 ~ 오후 10:00" },
+  { day: "목요일", hours: "오전 08:00 ~ 오후 12:00" },
+  { day: "금요일", hours: "오전 06:00 ~ 오후 10:00" },
+  { day: "토요일", hours: "오전 08:00 ~ 오후 12:00" },
+  { day: "일요일", hours: "휴무" },
+];
+
+
 const TouchableHeart = styled(FaHeart) <HeartProps>`
   color: ${({ active }) => (active ? 'red' : 'black')};
   cursor: pointer;
@@ -228,8 +232,6 @@ const StyledBookmark = styled(FaBookmark) <BookmarkProps>`
   color: ${({ active }) => (active ? '#05DC78' : 'white')};
   transition: color 0.3s ease;
 `;
-
-interface SongdoCentralParkProps { }
 
 const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
   const [heartActive, setHeartActive] = useState(false);
@@ -299,8 +301,6 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
         console.error("복사 실패:", err);
       });
   };
-
-  const daysOfWeek = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"];
 
   return (
     <>

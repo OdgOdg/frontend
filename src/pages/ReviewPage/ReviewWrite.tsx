@@ -1,11 +1,12 @@
-// ReviewForm.tsx
 import React, { useState } from "react";
 import styled from 'styled-components';
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
 
+/* ---------------------------- Styled Components ---------------------------- */
+
 const Container = styled.div`
-  width: 360px;
+  width: 95%;
   margin: 0 auto;
   padding: 16px;
   box-sizing: border-box;
@@ -97,6 +98,8 @@ const SubmitButton = styled.button`
     opacity : 0.9;
   }
 `;
+
+/* ------------------------- Component & Types ------------------------- */
 
 interface KeywordButtonProps {
     isSelected: boolean;

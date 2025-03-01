@@ -7,21 +7,8 @@ import { CiCirclePlus } from 'react-icons/ci';
 import { useSwipeable } from 'react-swipeable';
 import BottomNavbar from "../../components/BottomNavbar";
 
-interface CalendarProps {
-  year: number;
-  month: number;
-}
-
-interface CalendarEvent {
-  date: string;
-  title: string;
-  time: string;
-  isOriginal: boolean;
-}
-
-const CalendarContainer = styled.div`
+const Container = styled.div`
   width: 100%;
-  max-width: 400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -141,8 +128,14 @@ const NavButton = styled.button`
   padding: 0.25rem;
 `;
 
+/* ------------------------- Component & Types ------------------------- */
+
+interface CalendarProps {
+  year: number;
+  month: number;
+}
+
 const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
-  // 변경: 현재 날짜 상태를 관리 (월 변경용)
   const [currentDate, setCurrentDate] = useState(new Date(year, month - 1, 1));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
@@ -156,17 +149,14 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
 
   const daysArray: Date[] = [];
 
-  // 앞쪽(이전 달) 채우기
   for (let i = 0; i < startWeekday; i++) {
     daysArray.push(new Date(currentYear, currentMonth - 1, 1 - (startWeekday - i)));
   }
 
-  // 이번 달
   for (let i = 1; i <= totalDays; i++) {
     daysArray.push(new Date(currentYear, currentMonth - 1, i));
   }
 
-  // leftover: 마지막 주 채우기
   const leftoverDays = 7 - (daysArray.length % 7);
   if (leftoverDays < 7) {
     for (let i = 1; i <= leftoverDays; i++) {
@@ -174,7 +164,6 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     }
   }
 
-  // 오늘 날짜 판별
   const today = new Date();
   const checkIsToday = (date: Date) => {
     return (
@@ -184,13 +173,11 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     );
   };
 
-  // 날짜별 이벤트 필터
   const getEventsByDate = (date: Date) => {
     const yyyymmdd = format(date, 'yyyy-MM-dd');
     return sampleEvents.filter((ev) => ev.date === yyyymmdd);
   };
 
-  // 날짜 클릭 핸들러 (토글)
   const handleDayClick = (day: Date) => {
     if (selectedDate && selectedDate.getTime() === day.getTime()) {
       setSelectedDate(null);
@@ -199,23 +186,17 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     }
   };
 
-  // 선택된 날짜의 이벤트들
   const selectedEvents = selectedDate ? getEventsByDate(selectedDate) : [];
 
-  // ADDED: 새 일정 추가 버튼 클릭 핸들러
   const handleAddEvent = () => {
     alert('새로운 일정 추가 버튼을 눌렀습니다!');
-    // 일정 추가 모달 열기 혹은 다른 로직 추가 가능
   };
 
-  // ADDED: Swipe handlers를 통해 CalendarGrid를 좌우로 드래그하여 월 변경
   const handlers = useSwipeable({
     onSwipedRight: () => {
-      // 오른쪽으로 드래그하면 이전 월로 이동
       setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1));
     },
     onSwipedLeft: () => {
-      // 왼쪽으로 드래그하면 다음 월로 이동
       setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1));
     },
     // 오류있긴한데 해결방법을 정확히 모르고 일단 실행에 문제없어서 놔뒀습니다..
@@ -223,9 +204,15 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     trackMouse: true,
   });
 
+  const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const monthLabels = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+
   return (
     <>
-      <CalendarContainer>
+      <Container>
         {/* 달력 헤더 */}
         <CalendarHeader>
           <MonthYearText>
@@ -311,17 +298,10 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
         <FloatingButton onClick={handleAddEvent}>
           <CiCirclePlus size={30} />
         </FloatingButton>
-      </CalendarContainer>
+      </Container>
       <BottomNavbar />
     </>
   );
 };
-
-/** 요일/월 레이블(영문) */
-const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const monthLabels = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-];
 
 export default Calendar;
