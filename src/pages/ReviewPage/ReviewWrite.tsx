@@ -42,7 +42,7 @@ const KeywordContainer = styled.div`
 
 const KeywordGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 2컬럼 */
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 `;
 
@@ -52,9 +52,8 @@ const KeywordButton = styled.button<KeywordButtonProps>`
   justify-content: center;
   gap: 6px;
   padding: 8px;
-  border: 3px solid #ced4da;
   border-radius: 10px;
-  border: ${(props) => (props.isSelected ? "3px solid #00AA5B" : "3px solid #ced4da")};
+  border: ${(props) => (props.isSelected ? "2px solid #00AA5B" : "2px solid #ced4da")};
   background-color: ${(props) => (props.isSelected ? "#00AA5B" : "#fff")};
   color: ${(props) => (props.isSelected ? "#fff" : "#495057")};
   font-size: 15px;
@@ -116,10 +115,10 @@ const ReviewForm: React.FC = () => {
         "💵 가격이 합리적이에요",
     ];
     const rightKeywords = [
-        "👶 아이와 가기 좋아요",
+        "🕺 혼자 가기 좋아요",
         "👩‍❤️‍👨 연인과 가기 좋아요",
         "👫 친구와 가기 좋아요",
-        "👨‍👩‍👦 부모님과 가기 좋아요",
+        "👨‍👩‍👦 가족과 가기 좋아요",
     ];
 
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
