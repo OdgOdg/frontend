@@ -19,6 +19,7 @@ import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
 import AddSchedule from "./pages/CalendarPage/AddSchedule.tsx";
 import Calendar from "./pages/CalendarPage/Calendar.tsx";
 import MyProfile from "./pages/MyPage/Myprofile.tsx";
+import EventViewAtMap from "./pages/MapPage/EventViewAtMap.tsx"
 
 function AppLayout() {
   return (
@@ -53,6 +54,7 @@ function App() {
             <Route path="/addschedule" element={<AddSchedule />} />
             <Route path="/calendar" element={<Calendar year={2025} month={2} />} />
             <Route path="/myprofile" element={<MyProfile />} />
+            <Route path="/eventviewatmap" element={<EventViewAtMap />} />
           </Route>
         </Routes>
       </Router>
