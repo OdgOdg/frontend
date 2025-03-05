@@ -18,7 +18,7 @@ const LoginPage: React.FC = () => {
           <Subtitle>
             안녕하세요
             <br />
-            서비스입니다.
+            인천 여행의 시작을 함께할 ITG입니다.
           </Subtitle>
         </Text>
         <Form onSubmit={handleSubmit}>
@@ -31,7 +31,6 @@ const LoginPage: React.FC = () => {
           <LoginButton type="submit">로그인</LoginButton>
         </Form>
         <Footer>
-          <FooterLink href="#">비밀번호 찾기</FooterLink>
           <FooterLink href="#">회원가입</FooterLink>
         </Footer>
       </Container>

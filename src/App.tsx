@@ -26,6 +26,7 @@ import OutgoingCall from "./pages/chatPage/OutcomingCall.tsx";
 import ReviewWrite from "./pages/ReviewPage/ReviewWrite.tsx";
 import ReviewRead from "./pages/ReviewPage/ReviewRead.tsx";
 import LoginPage from "./pages/Loginpage.tsx";
+import SignupPage from "./pages/SignupPage.tsx";
 
 function AppLayout() {
   return (
@@ -67,6 +68,7 @@ function App() {
             <Route path="/reviewwrite" element={<ReviewWrite />} />
             <Route path="/reviewread" element={<ReviewRead />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
           </Route>
         </Routes>
       </Router>
