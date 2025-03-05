@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
-import { FaHeart, FaRegClock, FaPhoneAlt, FaPen, FaCaretDown, FaChevronRight, FaCopy } from 'react-icons/fa';
+import React, { useState, useRef } from "react";
+import styled from "styled-components";
+import { FaHeart, FaRegClock, FaPhoneAlt, FaPen, FaCaretDown, FaChevronRight, FaCopy } from "react-icons/fa";
 import { FiBookOpen } from "react-icons/fi";
 import { GrMapLocation } from "react-icons/gr";
 import { FaBookmark } from "react-icons/fa6";
-import { BiDirections } from 'react-icons/bi';
+import { BiDirections } from "react-icons/bi";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
 import 송도센트럴파크1 from "../../images/MapPage/송도센트럴파크1.jpg";
@@ -38,7 +38,7 @@ const MainTitle = styled.h1`
   margin: 0;
   font-size: 18px;
   font-weight: bold;
-  color: #00AA5B;
+  color: #00aa5b;
 `;
 
 const SubInfo = styled.div`
@@ -137,7 +137,7 @@ const Button = styled.button`
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   color: #fff;
   padding: 10px 0;
   border: none;
@@ -183,13 +183,13 @@ const OperatingHourItem = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 16px;
-  margin-top : 4px;
+  margin-top: 4px;
   color: #555;
 `;
 
 /* ------------------------- Component & Types ------------------------- */
 
-interface SongdoCentralParkProps { }
+interface SongdoCentralParkProps {}
 
 interface OperatingHoursDetailsProps {
   expanded: boolean;
@@ -205,10 +205,13 @@ interface BookmarkProps {
 
 const OperatingHoursDetails = styled.div<OperatingHoursDetailsProps>`
   overflow: hidden;
-  max-height: ${({ expanded }) => (expanded ? '500px' : '0')};
+  max-height: ${({ expanded }) => (expanded ? "500px" : "0")};
   opacity: ${({ expanded }) => (expanded ? 1 : 0)};
-  transform: translateY(${({ expanded }) => (expanded ? '0' : '-20px')});
-  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(${({ expanded }) => (expanded ? "0" : "-20px")});
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
 `;
 
 const operatingHours = [
@@ -221,15 +224,14 @@ const operatingHours = [
   { day: "일요일", hours: "휴무" },
 ];
 
-
-const TouchableHeart = styled(FaHeart) <HeartProps>`
-  color: ${({ active }) => (active ? 'red' : 'black')};
+const TouchableHeart = styled(FaHeart)<HeartProps>`
+  color: ${({ active }) => (active ? "red" : "black")};
   cursor: pointer;
   transition: color 0.3s ease;
 `;
 
-const StyledBookmark = styled(FaBookmark) <BookmarkProps>`
-  color: ${({ active }) => (active ? '#05DC78' : 'white')};
+const StyledBookmark = styled(FaBookmark)<BookmarkProps>`
+  color: ${({ active }) => (active ? "#05DC78" : "white")};
   transition: color 0.3s ease;
 `;
 
@@ -293,7 +295,8 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
 
   const handleCopyPhoneNumber = () => {
     const phoneNumber = "032-831-9935";
-    navigator.clipboard.writeText(phoneNumber)
+    navigator.clipboard
+      .writeText(phoneNumber)
       .then(() => {
         alert("전화번호가 복사되었습니다!");
       })
@@ -383,7 +386,7 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
 
         {/* 상세 정보 영역 */}
         <InfoList>
-          <InfoItem onClick={toggleOperatingHours} style={{ cursor: 'pointer' }}>
+          <InfoItem onClick={toggleOperatingHours} style={{ cursor: "pointer" }}>
             <LeftInfo>
               <FaRegClock />
               <span>매일 06:00 - 24:00</span>
@@ -410,7 +413,7 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
               <FaPhoneAlt />
               <span>032-831-9935</span>
             </LeftInfo>
-            <FaCopy onClick={handleCopyPhoneNumber} style={{ cursor: 'pointer' }} />
+            <FaCopy onClick={handleCopyPhoneNumber} style={{ cursor: "pointer" }} />
           </InfoItem>
           <InfoItem>
             <LeftInfo>
@@ -421,7 +424,7 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
           </InfoItem>
         </InfoList>
       </Container>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </>
   );
 };

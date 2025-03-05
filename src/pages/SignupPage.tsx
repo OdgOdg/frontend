@@ -1,8 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../components/Header";
 
 const SignupPage: React.FC = () => {
+  // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
+  useEffect(() => {
+    const originalPadding = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "0px";
+
+    return () => {
+      document.body.style.paddingBottom = originalPadding;
+    };
+  }, []);
+
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
@@ -93,7 +103,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  /* height: 100vh; */
   padding: 20px;
   box-sizing: border-box;
 `;

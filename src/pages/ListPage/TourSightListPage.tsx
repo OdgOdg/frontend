@@ -64,6 +64,66 @@ const events = [
     image:
       "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
   },
+  {
+    title: "센트럴파크",
+    location: "내 위치에서 13.7km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
+  },
+  {
+    title: "월미도",
+    location: "내 위치에서 25.7km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image:
+      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
+  },
+  {
+    title: "차이나 타운",
+    location: "내 위치에서 22.4km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image:
+      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
+  },
+  {
+    title: "센트럴파크",
+    location: "내 위치에서 13.7km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
+  },
+  {
+    title: "월미도",
+    location: "내 위치에서 25.7km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image:
+      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
+  },
+  {
+    title: "차이나 타운",
+    location: "내 위치에서 22.4km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image:
+      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
+  },
+  {
+    title: "센트럴파크",
+    location: "내 위치에서 13.7km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
+  },
+  {
+    title: "월미도",
+    location: "내 위치에서 25.7km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image:
+      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
+  },
+  {
+    title: "차이나 타운",
+    location: "내 위치에서 22.4km",
+    date: "운영 중 | 23:00에 운영 종료",
+    image:
+      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
+  },
   // 추가 이벤트를 여기에 추가
 ];
 
@@ -95,7 +155,7 @@ const Container = styled.div`
   flex-wrap: wrap; /* 카드가 넘치면 다음 줄로 이동 */
   gap: 16px; /* 카드 간격 */
   padding: 20px;
-  max-height: 100vh;
+  /* max-height: 100vh; */
   overflow-y: auto; /* 수직 스크롤 활성화 */
   background-color: #f9f9f9;
   padding-right: 0;

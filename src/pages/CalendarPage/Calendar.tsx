@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { format } from 'date-fns';
-import { sampleEvents } from './EventData';
-import ToggleMenu from './EventToggle';
-import { CiCirclePlus } from 'react-icons/ci';
-import { useSwipeable } from 'react-swipeable';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { format } from "date-fns";
+import { sampleEvents } from "./EventData";
+import ToggleMenu from "./EventToggle";
+import { CiCirclePlus } from "react-icons/ci";
+import { useSwipeable } from "react-swipeable";
 import BottomNavbar from "../../components/BottomNavbar";
 
 const Container = styled.div`
@@ -12,7 +12,7 @@ const Container = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-family: "Helvetica", "Arial", sans-serif;
 `;
 
 const CalendarHeader = styled.div`
@@ -40,7 +40,7 @@ const WeekdaysRow = styled.div`
 `;
 
 const WeekdayCell = styled.div<{ isSunday?: boolean }>`
-  color: ${({ isSunday }) => (isSunday ? '#EF0707' : 'inherit')};
+  color: ${({ isSunday }) => (isSunday ? "#EF0707" : "inherit")};
 `;
 
 const CalendarGrid = styled.div`
@@ -61,9 +61,9 @@ const DayCell = styled.div<{
   padding: 0.5rem;
   box-sizing: border-box;
   position: relative;
-  border: 1px solid ${({ isSelected }) => (isSelected ? 'black' : '#DDDDDD')};
-  color: ${({ isCurrentMonth }) => (isCurrentMonth ? '#333' : '#bbb')};
-  background-color: ${({ isToday }) => (isToday ? '#D9D9D9' : 'transparent')};
+  border: 1px solid ${({ isSelected }) => (isSelected ? "black" : "#DDDDDD")};
+  color: ${({ isCurrentMonth }) => (isCurrentMonth ? "#333" : "#bbb")};
+  background-color: ${({ isToday }) => (isToday ? "#D9D9D9" : "transparent")};
   cursor: pointer;
 `;
 
@@ -77,7 +77,7 @@ const EventWrapper = styled.div`
 `;
 
 const EventTag = styled.div<{ isOriginal?: boolean }>`
-  background-color: ${({ isOriginal }) => (isOriginal ? '#00AA5B' : '#4771EC')};
+  background-color: ${({ isOriginal }) => (isOriginal ? "#00AA5B" : "#4771EC")};
   color: #fff;
   font-size: 0.5rem;
   padding: 0.2rem 0.4rem;
@@ -97,14 +97,14 @@ const ToggleMenusWrapper = styled.div`
 `;
 
 const FloatingButton = styled.button`
-  position : absolute;
-  bottom : 19.5rem;
-  right : 1rem;
+  position: absolute;
+  bottom: 19.5rem;
+  right: 1rem;
   width: 36px;
   height: 36px;
   border: none;
   border-radius: 100%;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   color: white;
   display: flex;
   align-items: center;
@@ -174,7 +174,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   };
 
   const getEventsByDate = (date: Date) => {
-    const yyyymmdd = format(date, 'yyyy-MM-dd');
+    const yyyymmdd = format(date, "yyyy-MM-dd");
     return sampleEvents.filter((ev) => ev.date === yyyymmdd);
   };
 
@@ -189,7 +189,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   const selectedEvents = selectedDate ? getEventsByDate(selectedDate) : [];
 
   const handleAddEvent = () => {
-    alert('새로운 일정 추가 버튼을 눌렀습니다!');
+    alert("새로운 일정 추가 버튼을 눌렀습니다!");
   };
 
   const handlers = useSwipeable({
@@ -204,33 +204,20 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     trackMouse: true,
   });
 
-  const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const monthLabels = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+  const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   return (
     <>
       <Container>
         {/* 달력 헤더 */}
         <CalendarHeader>
-          <MonthYearText>
-            {`${monthLabels[currentMonth - 1]} ${currentYear}`}
-          </MonthYearText>
+          <MonthYearText>{`${monthLabels[currentMonth - 1]} ${currentYear}`}</MonthYearText>
           <NavigationContainer>
-            <NavButton
-              onClick={() =>
-                setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))
-              }
-            >
+            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))}>
               {"<"}
             </NavButton>
-            <NavButton
-              onClick={() =>
-                setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))
-              }
-            >
+            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))}>
               {">"}
             </NavButton>
           </NavigationContainer>
@@ -239,7 +226,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
         {/* 요일 헤더 */}
         <WeekdaysRow>
           {weekdayLabels.map((label) => (
-            <WeekdayCell key={label} isSunday={label === 'Sun'}>
+            <WeekdayCell key={label} isSunday={label === "Sun"}>
               {label}
             </WeekdayCell>
           ))}
@@ -299,7 +286,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
           <CiCirclePlus size={30} />
         </FloatingButton>
       </Container>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </>
   );
 };

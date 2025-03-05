@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 /* styled-components */
 
 const Container = styled.div`
   width: 90%;
-  padding : 16px;
+  padding: 16px;
   margin: 0 auto;
   overflow: auto;
 `;
@@ -24,7 +24,7 @@ const Label = styled.div`
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 12px;
-  color: #ABABAB;
+  color: #ababab;
 `;
 
 const Select = styled.select`
@@ -57,7 +57,7 @@ const SubmitButton = styled.button`
   padding: 10px;
   font-size: 18px;
   color: white;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   border: none;
   border-radius: 20px;
   cursor: pointer;
@@ -74,25 +74,21 @@ const options = {
   gender: ["MAN", "WOMEN"],
   age: ["24세", "25세", "26세", "27세"],
   season: ["봄 🌱", "여름 ☀️", "가을 🍂", "겨울 ❄️"],
-  type: [
-    "산 🌲",
-    "공원 🌊",
-    "바다 🏝️",
-    "행사/축제 🎈",
-    "문화유적 ⛩️",
-    "실내 🏛️",
-    "액티비티 🎭",
-    "실외 ⛺",
-  ],
-  together: [
-    "아이와 함께 👶",
-    "친구와 함께 👫",
-    "연인과 함께 💑",
-    "부모님과 함께 👨‍👩‍👧‍👦",
-  ],
+  type: ["산 🌲", "공원 🌊", "바다 🏝️", "행사/축제 🎈", "문화유적 ⛩️", "실내 🏛️", "액티비티 🎭", "실외 ⛺"],
+  together: ["아이와 함께 👶", "친구와 함께 👫", "연인과 함께 💑", "부모님과 함께 👨‍👩‍👧‍👦"],
 };
 
 const SurveyForm: React.FC = () => {
+  // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
+  useEffect(() => {
+    const originalPadding = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "0px";
+
+    return () => {
+      document.body.style.paddingBottom = originalPadding;
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
     gender: "",
     age: "24세",
@@ -115,7 +111,9 @@ const SurveyForm: React.FC = () => {
 
   return (
     <Container>
-      <Title>사전조사 정보를 입력하고<br></br> 나에게 맞는 행사 및 관광지를 추천받으세요!</Title>
+      <Title>
+        사전조사 정보를 입력하고<br></br> 나에게 맞는 행사 및 관광지를 추천받으세요!
+      </Title>
 
       {/* GENDER */}
       <Section>
