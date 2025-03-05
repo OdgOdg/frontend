@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
 
@@ -59,7 +59,7 @@ const KeywordButton = styled.button<KeywordButtonProps>`
   font-size: 15px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     opacity: 0.9;
   }
@@ -85,7 +85,7 @@ const SubmitButton = styled.button`
   display: block;
   width: 60%;
   padding: 14px;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   color: #fff;
   border: none;
   border-radius: 100px;
@@ -94,113 +94,108 @@ const SubmitButton = styled.button`
   margin: 0 auto;
 
   &:hover {
-    opacity : 0.9;
+    opacity: 0.9;
   }
 `;
 
 /* ------------------------- Component & Types ------------------------- */
 
 interface KeywordButtonProps {
-    isSelected: boolean;
+  isSelected: boolean;
 }
 
 const ReviewForm: React.FC = () => {
+  const leftKeywords = [
+    "🕹️ 즐길거리가 많아요",
+    "📸 사진찍기 좋아요",
+    "👀 볼거리가 많아요",
+    "🅿️ 주차하기 편해요",
+    "🚌 대중교통이 편해요",
+    "💵 가격이 합리적이에요",
+  ];
+  const rightKeywords = [
+    "🕺 혼자 가기 좋아요",
+    "👩‍❤️‍👨 연인과 가기 좋아요",
+    "👫 친구와 가기 좋아요",
+    "👨‍👩‍👦 가족과 가기 좋아요",
+  ];
 
-    const leftKeywords = [
-        "🕹️ 즐길거리가 많아요",
-        "📸 사진찍기 좋아요",
-        "👀 볼거리가 많아요",
-        "🅿️ 주차하기 편해요",
-        "🚌 대중교통이 편해요",
-        "💵 가격이 합리적이에요",
-    ];
-    const rightKeywords = [
-        "🕺 혼자 가기 좋아요",
-        "👩‍❤️‍👨 연인과 가기 좋아요",
-        "👫 친구와 가기 좋아요",
-        "👨‍👩‍👦 가족과 가기 좋아요",
-    ];
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
 
-    const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+  const [reviewText, setReviewText] = useState<string>("");
 
-    const [reviewText, setReviewText] = useState<string>("");
+  const toggleKeyword = (keyword: string) => {
+    setSelectedKeywords((prev) => (prev.includes(keyword) ? prev.filter((k) => k !== keyword) : [...prev, keyword]));
+  };
 
-    const toggleKeyword = (keyword: string) => {
-        setSelectedKeywords((prev) =>
-            prev.includes(keyword)
-                ? prev.filter((k) => k !== keyword)
-                : [...prev, keyword]
-        );
+  const handleSubmit = () => {
+    const reviewData = {
+      keywords: selectedKeywords,
+      reviewText,
     };
+    console.log("리뷰 데이터:", reviewData);
+    alert("리뷰가 등록되었습니다!");
+    setSelectedKeywords([]);
+    setReviewText("");
+  };
 
-    const handleSubmit = () => {
-        const reviewData = {
-            keywords: selectedKeywords,
-            reviewText,
-        };
-        console.log("리뷰 데이터:", reviewData);
-        alert("리뷰가 등록되었습니다!");
-        setSelectedKeywords([]);
-        setReviewText("");
-    };
+  return (
+    <>
+      <Header
+        title={
+          <>
+            <span style={{ color: "#00AA5B" }}>송도센트럴 파크</span>
+            <span style={{ fontSize: "14px" }}>에 대한 리뷰를 작성해주세요!</span>
+          </>
+        }
+      />
 
-    return (
-        <>
-            <Header
-                title={
-                    <>
-                        <span style={{ color: "#00AA5B" }}>송도센트럴 파크</span>
-                        <span style={{ fontSize: "14px" }}>에 대한 리뷰를 작성해주세요!</span>
-                    </>
-                }
-            />
+      <Container>
+        {/* 상단 컨텐츠 */}
+        <div>
+          <TopSection>
+            <Title>어떤 점이 좋았나요?</Title>
+            <SubTitle>이 곳에 어울리는 키워드를 선택해주세요! (1~5개) </SubTitle>
+          </TopSection>
 
-            <Container>
-                {/* 상단 컨텐츠 */}
-                <div>
-                    <TopSection>
-                        <Title>어떤 점이 좋았나요?</Title>
-                        <SubTitle>이 곳에 어울리는 키워드를 선택해주세요! (1~5개) </SubTitle>
-                    </TopSection>
+          {/* 키워드 선택 영역 */}
+          <KeywordContainer>
+            <KeywordGrid>
+              {leftKeywords.map((keyword) => (
+                <KeywordButton
+                  key={keyword}
+                  isSelected={selectedKeywords.includes(keyword)}
+                  onClick={() => toggleKeyword(keyword)}
+                >
+                  {keyword}
+                </KeywordButton>
+              ))}
+              {rightKeywords.map((keyword) => (
+                <KeywordButton
+                  key={keyword}
+                  isSelected={selectedKeywords.includes(keyword)}
+                  onClick={() => toggleKeyword(keyword)}
+                >
+                  {keyword}
+                </KeywordButton>
+              ))}
+            </KeywordGrid>
+          </KeywordContainer>
 
-                    {/* 키워드 선택 영역 */}
-                    <KeywordContainer>
-                        <KeywordGrid>
-                            {leftKeywords.map((keyword) => (
-                                <KeywordButton
-                                    key={keyword}
-                                    isSelected={selectedKeywords.includes(keyword)}
-                                    onClick={() => toggleKeyword(keyword)}
-                                >
-                                    {keyword}
-                                </KeywordButton>
-                            ))}
-                            {rightKeywords.map((keyword) => (
-                                <KeywordButton
-                                    key={keyword}
-                                    isSelected={selectedKeywords.includes(keyword)}
-                                    onClick={() => toggleKeyword(keyword)}
-                                >
-                                    {keyword}
-                                </KeywordButton>
-                            ))}
-                        </KeywordGrid>
-                    </KeywordContainer>
+          {/* 리뷰 텍스트 작성 */}
+          <ReviewTextArea
+            placeholder="✏️리뷰를 작성해 주세요!"
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+          />
 
-                    {/* 리뷰 텍스트 작성 */}
-                    <ReviewTextArea
-                        placeholder="✏️리뷰를 작성해 주세요!"
-                        value={reviewText}
-                        onChange={(e) => setReviewText(e.target.value)}
-                    />
-
-                    {/* 등록 버튼 */}
-                    <SubmitButton onClick={handleSubmit}>등록 하기</SubmitButton>
-                </div>
-            </Container>
-            <BottomNavbar />
-        </>
-    );
+          {/* 등록 버튼 */}
+          <SubmitButton onClick={handleSubmit}>등록 하기</SubmitButton>
+        </div>
+      </Container>
+      <BottomNavbar paddingBottom={false} />
+    </>
+  );
 };
 
 export default ReviewForm;

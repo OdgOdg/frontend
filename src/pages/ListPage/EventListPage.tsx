@@ -22,6 +22,24 @@ const events = [
     date: "2024.10.4 - 10.6",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
   },
+  {
+    title: "2024 제12회 연수 능허대 문화축제",
+    location: "송도달빛공원 및 능허대공원 일원",
+    date: "2024.10.4 - 10.6",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
+  },
+  {
+    title: "2024 제12회 연수 능허대 문화축제",
+    location: "송도달빛공원 및 능허대공원 일원",
+    date: "2024.10.4 - 10.6",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
+  },
+  {
+    title: "2024 제12회 연수 능허대 문화축제",
+    location: "송도달빛공원 및 능허대공원 일원",
+    date: "2024.10.4 - 10.6",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
+  },
 ];
 
 const EventListPage: React.FC = () => {
@@ -52,7 +70,7 @@ const Container = styled.div`
   flex-direction: column;
   gap: 16px;
   padding: 20px;
-  max-height: 100vh;
+  /* max-height: 100vh; */
   overflow-y: auto;
   background-color: #f9f9f9;
 

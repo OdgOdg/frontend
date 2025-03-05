@@ -11,7 +11,7 @@ const DeleteAccountPage = () => {
         <Input type="password" placeholder="비밀번호를 입력해 주세요" />
         <DisabledButton disabled>회원탈퇴</DisabledButton>
       </Container>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </div>
   );
 };
@@ -21,7 +21,7 @@ const Container = styled.div`
   max-width: 400px;
   margin: auto;
   padding: 20px;
-  height: 100vh;
+  /* height: 100vh; */
 `;
 
 const Label = styled.label`

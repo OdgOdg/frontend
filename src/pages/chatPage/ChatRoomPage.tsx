@@ -23,6 +23,38 @@ const ChatRoomPage: React.FC = () => {
       timeStamp: "10:12",
       isUser: true,
     },
+    { text: "안녕하세요!", timeStamp: "10:10", isUser: false },
+    {
+      text: "오늘 맥주축제 같이 가기로 약속했던 홍길동입니다. 축제장 근처에 도착해있어요! 지금 어디쯤 오셨나요?",
+      timeStamp: "10:10",
+      isUser: false,
+    },
+    {
+      text: "안녕하세요~",
+      timeStamp: "10:12",
+      isUser: true,
+    },
+    {
+      text: "저도 축제장 근처에 거의 다 왔습니다. 도착하면 음성통화 드릴게요",
+      timeStamp: "10:12",
+      isUser: true,
+    },
+    { text: "안녕하세요!", timeStamp: "10:10", isUser: false },
+    {
+      text: "오늘 맥주축제 같이 가기로 약속했던 홍길동입니다. 축제장 근처에 도착해있어요! 지금 어디쯤 오셨나요?",
+      timeStamp: "10:10",
+      isUser: false,
+    },
+    {
+      text: "안녕하세요~",
+      timeStamp: "10:12",
+      isUser: true,
+    },
+    {
+      text: "저도 축제장 근처에 거의 다 왔습니다. 도착하면 음성통화 드릴게요",
+      timeStamp: "10:12",
+      isUser: true,
+    },
   ]);
   const [input, setInput] = useState("");
 
@@ -68,7 +100,7 @@ const ChatRoomPage: React.FC = () => {
 
 const ChatContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  /* height: 100vh; */
   display: flex;
   flex-direction: column;
   overflow: hidden;

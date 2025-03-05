@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Header from "../components/Header";
 
 const LoginPage: React.FC = () => {
+  // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
+  useEffect(() => {
+    const originalPadding = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "0px";
+
+    return () => {
+      document.body.style.paddingBottom = originalPadding;
+    };
+  }, []);
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     console.log("로그인 버튼 클릭");
@@ -46,7 +56,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  /* height: 100vh; */
   padding: 20px;
   box-sizing: border-box;
 `;

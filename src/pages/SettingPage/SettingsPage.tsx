@@ -33,7 +33,7 @@ const SettingsPage: React.FC = () => {
           <SettingItem>언어 설정</SettingItem>
         </MoreSection>
       </Container>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </ThemeProvider>
   );
 };

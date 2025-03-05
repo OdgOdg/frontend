@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { FiMic, FiVolume2, FiPhoneOff } from "react-icons/fi";
 import profileImage from "../../images/chatPage/gilDong.png";
 
 const OutgoingCall: React.FC = () => {
+  // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
+  useEffect(() => {
+    const originalPadding = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "0px";
+
+    return () => {
+      document.body.style.paddingBottom = originalPadding;
+    };
+  }, []);
+
   return (
     <Container>
       <Content>

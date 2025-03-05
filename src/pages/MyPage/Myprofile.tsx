@@ -1,15 +1,15 @@
-import React from 'react';
-import styled from 'styled-components';
-import { IoSettingsSharp } from 'react-icons/io5';
-import DefaultProfileImg from '../../images/MyPage/DefaultProfileImg.png'
-import 송도센트럴파크 from '../../images/MyPage/송도센트럴파크.jpg';
-import 월미도 from '../../images/MyPage/월미도.jpg';
-import 개항장 from '../../images/MyPage/개항장.jpg';
-import 차이나타운 from '../../images/MyPage/차이나타운.jpg';
-import 계양산 from '../../images/MyPage/계양산.jpg';
-import 을왕리해수욕장 from '../../images/MyPage/을왕리해수욕장.jpg';
-import BottomNavbar from "../../components/BottomNavbar"
-import Header from "../../components/Header"
+import React from "react";
+import styled from "styled-components";
+import { IoSettingsSharp } from "react-icons/io5";
+import DefaultProfileImg from "../../images/MyPage/DefaultProfileImg.png";
+import 송도센트럴파크 from "../../images/MyPage/송도센트럴파크.jpg";
+import 월미도 from "../../images/MyPage/월미도.jpg";
+import 개항장 from "../../images/MyPage/개항장.jpg";
+import 차이나타운 from "../../images/MyPage/차이나타운.jpg";
+import 계양산 from "../../images/MyPage/계양산.jpg";
+import 을왕리해수욕장 from "../../images/MyPage/을왕리해수욕장.jpg";
+import BottomNavbar from "../../components/BottomNavbar";
+import Header from "../../components/Header";
 
 /* styled-components */
 
@@ -71,9 +71,9 @@ const Button = styled.button`
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   color: #ffffff;
-   &:hover {
+  &:hover {
     opacity: 0.9;
   }
 `;
@@ -115,7 +115,7 @@ const ProfileManagementButton = styled.button`
   margin: 12px auto;
   padding: 12px;
   border: none;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   color: white;
   border-radius: 100px;
   cursor: pointer;
@@ -180,9 +180,8 @@ const MyProfile: React.FC = () => {
         {/* 프로필 관리 버튼 */}
         <ProfileManagementButton>프로필 관리</ProfileManagementButton>
       </Container>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </>
-
   );
 };
 

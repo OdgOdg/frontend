@@ -63,6 +63,70 @@ const chatData: Chat[] = [
     date: "05/05",
     avatar: "https://randomuser.me/api/portraits/women/6.jpg",
   },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
 ];
 
 const ChatRoomList: React.FC = () => {
@@ -95,7 +159,12 @@ const ChatListContainer = styled.div`
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  height: 100vh;
+  height: auto;
+  overflow: auto; // 스크롤
+
+  &::-webkit-scrollbar {
+    display: none; // 스크롤바 숨기기
+  }
 `;
 
 const ChatItem = styled.div`

@@ -1,7 +1,17 @@
 import React from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 
 const DeleteAccountSuccessPage: React.FC = () => {
+  useEffect(() => {
+    const originalPadding = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "0px";
+
+    return () => {
+      document.body.style.paddingBottom = originalPadding;
+    };
+  }, []);
+
   const handleContinue = () => {
     alert("계속 둘러보기 클릭됨");
   };

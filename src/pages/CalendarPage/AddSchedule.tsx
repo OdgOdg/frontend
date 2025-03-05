@@ -1,17 +1,16 @@
-import React, { useState, FormEvent } from 'react';
-import styled from 'styled-components';
-import BottomNavbar from "../../components/BottomNavbar"
-import Header from "../../components/Header"
+import React, { useState, FormEvent } from "react";
+import styled from "styled-components";
+import BottomNavbar from "../../components/BottomNavbar";
+import Header from "../../components/Header";
 
 /* ---------------------------- Styled Components ---------------------------- */
 
 const Container = styled.div`
-  width : 85%;
+  width: 85%;
   display: flex;
   flex-direction: column;
   padding: 16px;
   margin: 0 auto;
-
 `;
 
 const Label = styled.label`
@@ -56,7 +55,7 @@ const ToggleCheckbox = styled.input`
   height: 0;
 
   &:checked + span {
-    background-color: #00AA5B;
+    background-color: #00aa5b;
   }
 
   &:checked + span:before {
@@ -67,7 +66,10 @@ const ToggleCheckbox = styled.input`
 const ToggleSlider = styled.span`
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: #ccc;
   border-radius: 34px;
   transition: 0.4s;
@@ -88,7 +90,7 @@ const ToggleSlider = styled.span`
 const DateTimeContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px; 
+  gap: 4px;
   margin-bottom: 16px;
 `;
 
@@ -139,12 +141,12 @@ const SaveButton = styled.button`
   width: 60%;
   padding: 12px;
   font-size: 18px;
-  background-color: #00AA5B;
+  background-color: #00aa5b;
   color: white;
   border: none;
   border-radius: 100px;
   cursor: pointer;
-  display: block; 
+  display: block;
   margin: 0 auto;
   &:hover {
     opacity: 0.9;
@@ -168,20 +170,18 @@ interface FormData {
 
 const AddSchedule: React.FC<AddScheduleProps> = () => {
   const [formData, setFormData] = useState<FormData>({
-    title: '',
+    title: "",
     isAllDay: false,
-    startDateTime: '',
-    endDateTime: '',
-    alarm: '없음',
-    memo: '',
+    startDateTime: "",
+    endDateTime: "",
+    alarm: "없음",
+    memo: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     let val: string | boolean = value;
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       val = (e.target as HTMLInputElement).checked;
     }
 
@@ -193,8 +193,8 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log('저장된 데이터:', formData);
-    alert('일정이 저장되었습니다!');
+    console.log("저장된 데이터:", formData);
+    alert("일정이 저장되었습니다!");
   };
 
   return (
@@ -214,12 +214,7 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
           <ToggleWrapper>
             <span>하루 종일 🕒</span>
             <ToggleLabel>
-              <ToggleCheckbox
-                type="checkbox"
-                name="isAllDay"
-                checked={formData.isAllDay}
-                onChange={handleChange}
-              />
+              <ToggleCheckbox type="checkbox" name="isAllDay" checked={formData.isAllDay} onChange={handleChange} />
               <ToggleSlider />
             </ToggleLabel>
           </ToggleWrapper>
@@ -241,12 +236,7 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
 
           <SelectContainer>
             <Label htmlFor="alarm">알림 🔔</Label>
-            <Select
-              id="alarm"
-              name="alarm"
-              value={formData.alarm}
-              onChange={handleChange}
-            >
+            <Select id="alarm" name="alarm" value={formData.alarm} onChange={handleChange}>
               <option value="없음">없음</option>
               <option value="5분 전">5분 전</option>
               <option value="10분 전">10분 전</option>
@@ -267,7 +257,7 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
           <SaveButton type="submit">저장하기</SaveButton>
         </form>
       </Container>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </>
   );
 };

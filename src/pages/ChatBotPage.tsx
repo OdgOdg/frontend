@@ -62,7 +62,7 @@ const ChatBotPage: React.FC = () => {
 
 const ChatContainer = styled.div`
   width: 100%;
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
