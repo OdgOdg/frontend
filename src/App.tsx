@@ -19,12 +19,13 @@ import ChatRoomPage from "./pages/chatPage/ChatRoomPage.tsx";
 import AddSchedule from "./pages/CalendarPage/AddSchedule.tsx";
 import Calendar from "./pages/CalendarPage/Calendar.tsx";
 import MyProfile from "./pages/MyPage/Myprofile.tsx";
-import EventViewAtMap from "./pages/MapPage/EventViewAtMap.tsx"
+import EventViewAtMap from "./pages/MapPage/EventViewAtMap.tsx";
 import TourSightListPage from "./pages/ListPage/TourSightListPage.tsx";
 import IncomingCall from "./pages/chatPage/IncomingCall.tsx";
 import OutgoingCall from "./pages/chatPage/OutcomingCall.tsx";
 import ReviewWrite from "./pages/ReviewPage/ReviewWrite.tsx";
 import ReviewRead from "./pages/ReviewPage/ReviewRead.tsx";
+import LoginPage from "./pages/Loginpage.tsx";
 
 function AppLayout() {
   return (
@@ -65,6 +66,7 @@ function App() {
             <Route path="/outgoingcall" element={<OutgoingCall />} />
             <Route path="/reviewwrite" element={<ReviewWrite />} />
             <Route path="/reviewread" element={<ReviewRead />} />
+            <Route path="/login" element={<LoginPage />} />
           </Route>
         </Routes>
       </Router>
