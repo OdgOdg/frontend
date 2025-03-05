@@ -63,6 +63,46 @@ const chatData: Chat[] = [
     date: "05/05",
     avatar: "https://randomuser.me/api/portraits/women/6.jpg",
   },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
+  {
+    id: 6,
+    name: "이근모",
+    message: "눈 많이 온다",
+    time: "11:20",
+    date: "05/05",
+    avatar: "https://randomuser.me/api/portraits/women/6.jpg",
+  },
 ];
 
 const ChatRoomList: React.FC = () => {

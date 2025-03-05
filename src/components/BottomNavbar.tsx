@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useState } from "react";
 import React from "react";
 import styled from "styled-components";
@@ -9,7 +10,7 @@ interface INavbarItem {
   id: number;
   icon: IconType;
   path: string;
-  label: string; // Add the label property here
+  label: string;
 }
 
 const navbarItems: INavbarItem[] = [
@@ -20,13 +21,27 @@ const navbarItems: INavbarItem[] = [
   { id: 6, icon: AiOutlineUser, path: "/profile", label: "Profile" },
 ];
 
-const BottomNavbar: React.FC = () => {
+interface BottomNavbarProps {
+  paddingBottom?: boolean;
+}
+
+const BottomNavbar: React.FC<BottomNavbarProps> = ({ paddingBottom = true }) => {
   const [activeId, setActiveId] = useState(1);
 
   const handleClick = (id: number) => {
     setActiveId(id);
-    // TODO: path에 따라 페이지 이동 로직 추가
   };
+
+  useEffect(() => {
+    if (!paddingBottom) {
+      document.body.style.paddingBottom = "0px";
+    } else {
+      document.body.style.paddingBottom = "60px";
+    }
+    return () => {
+      document.body.style.paddingBottom = "0px"; // 컴포넌트가 언마운트될 때 초기화
+    };
+  }, [paddingBottom]);
 
   return (
     <Navbar>

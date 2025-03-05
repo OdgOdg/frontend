@@ -14,7 +14,7 @@ const LanguageSelectionPage = () => {
           <img src="https://flagcdn.com/w40/us.png" alt="US Flag" /> English (US)
         </LanguageItem>
       </LanguageContainer>
-      <BottomNavbar />
+      <BottomNavbar paddingBottom={false} />
     </div>
   );
 };
@@ -24,7 +24,7 @@ const LanguageContainer = styled.div`
   max-width: 400px;
   margin: auto;
   padding: 20px;
-  height: 100vh;
+  /* height: 100vh; */
 `;
 
 const LanguageItem = styled.div`
