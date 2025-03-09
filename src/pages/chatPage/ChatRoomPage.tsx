@@ -110,7 +110,7 @@ const ChatContainer = styled.div`
 const ChatBody = styled.div`
   flex: 1;
   padding: 20px;
-  padding-bottom: 70px; /* 입력창 공간 확보 */
+  padding-bottom: 80px; /* 입력창 공간 확보 */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -144,7 +144,7 @@ const ChatInputContainer = styled.div`
   border-top: 1px solid #ccc;
   background: white;
   position: fixed;
-  bottom: 12%;
+  bottom: 90px;
   left: 50%;
   transform: translate(-50%, 50%);
   border-radius: 50px;
