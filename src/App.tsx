@@ -27,6 +27,7 @@ import ReviewWrite from "./pages/ReviewPage/ReviewWrite.tsx";
 import ReviewRead from "./pages/ReviewPage/ReviewRead.tsx";
 import LoginPage from "./pages/Loginpage.tsx";
 import SignupPage from "./pages/SignupPage.tsx";
+import Map from "./pages/MapPage/Map.tsx";
 
 function AppLayout() {
   return (
@@ -69,6 +70,7 @@ function App() {
             <Route path="/reviewread" element={<ReviewRead />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/map" element={<Map />} />
           </Route>
         </Routes>
       </Router>

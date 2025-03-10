@@ -55,6 +55,7 @@ const Navbar = styled.div`
   border-top: 1px solid #eee;
   margin: auto;
   max-width: 580px;
+  z-index : 999;
 `;
 
 const NavbarItem = styled.div`
