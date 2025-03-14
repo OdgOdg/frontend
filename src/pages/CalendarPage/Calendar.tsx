@@ -7,12 +7,15 @@ import { CiCirclePlus } from "react-icons/ci";
 import { useSwipeable } from "react-swipeable";
 import BottomNavbar from "../../components/BottomNavbar";
 
+const CalendarContentWrapper = styled.div`
+  position: relative;
+`;
+
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  font-family: "Helvetica", "Arial", sans-serif;
 `;
 
 const CalendarHeader = styled.div`
@@ -96,17 +99,18 @@ const ToggleMenusWrapper = styled.div`
   margin-top: 1rem;
 `;
 
+// FloatingButton은 이제 CalendarContentWrapper의 자식으로, 그 내부에서 절대 위치로 고정됨
 const FloatingButton = styled.button`
   position: absolute;
-  bottom: 19.5rem;
+  bottom: -4rem; /* CalendarContentWrapper 내부 기준 */
   right: 1rem;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 100%;
+  border-radius: 50%;
   background-color: #00aa5b;
   color: white;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -208,22 +212,29 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   return (
-    <>
-      <Container>
-        {/* 달력 헤더 */}
+    <Container>
+      <CalendarContentWrapper>
+        {/* 달력 헤더, 날짜 셀 등 주요 컨텐츠 */}
         <CalendarHeader>
           <MonthYearText>{`${monthLabels[currentMonth - 1]} ${currentYear}`}</MonthYearText>
           <NavigationContainer>
-            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))}>
+            <NavButton
+              onClick={() =>
+                setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))
+              }
+            >
               {"<"}
             </NavButton>
-            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))}>
+            <NavButton
+              onClick={() =>
+                setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))
+              }
+            >
               {">"}
             </NavButton>
           </NavigationContainer>
         </CalendarHeader>
-
-        {/* 요일 헤더 */}
+  
         <WeekdaysRow>
           {weekdayLabels.map((label) => (
             <WeekdayCell key={label} isSunday={label === "Sun"}>
@@ -231,8 +242,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
             </WeekdayCell>
           ))}
         </WeekdaysRow>
-
-        {/* 날짜 셀 */}
+  
         <div {...handlers}>
           <CalendarGrid>
             {daysArray.map((day, idx) => {
@@ -240,7 +250,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
               const isToday = checkIsToday(day);
               const isSelected = selectedDate && selectedDate.getTime() === day.getTime();
               const dailyEvents = getEventsByDate(day);
-
+    
               return (
                 <DayCell
                   key={idx}
@@ -250,7 +260,6 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
                   onClick={() => handleDayClick(day)}
                 >
                   {day.getDate()}
-                  {/* 날짜 셀 내부 이벤트 태그 표시 */}
                   {dailyEvents.length > 0 && (
                     <EventWrapper>
                       {dailyEvents.map((ev, i) => (
@@ -265,30 +274,31 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
             })}
           </CalendarGrid>
         </div>
-
-        {/* 선택된 날짜의 이벤트를 ToggleMenu(가로배치)로 렌더링 */}
-        {selectedEvents.length > 0 && selectedDate && (
-          <ToggleMenusWrapper>
-            {selectedEvents.map((ev, i) => (
-              <ToggleMenu
-                key={i}
-                leftLabel={ev.time}
-                rightLabel={ev.title}
-                onClickArrow={() => alert(`"${ev.title}" 화살표 클릭!`)}
-                isOriginal={ev.isOriginal}
-              />
-            ))}
-          </ToggleMenusWrapper>
-        )}
-
-        {/* ADDED: 우측 하단 플로팅 버튼 */}
+  
+        {/* FloatingButton은 CalendarContentWrapper 내부에 위치하므로 ToggleMenusWrapper가 렌더링되어도 영향을 받지 않음 */}
         <FloatingButton onClick={handleAddEvent}>
           <CiCirclePlus size={30} />
         </FloatingButton>
-      </Container>
-      <BottomNavbar paddingBottom={false} />
-    </>
+      </CalendarContentWrapper>
+  
+      {/* 선택된 날짜의 이벤트 ToggleMenusWrapper는 Container 내부에서 별도로 렌더링 */}
+      {selectedEvents.length > 0 && selectedDate && (
+        <ToggleMenusWrapper>
+          {selectedEvents.map((ev, i) => (
+            <ToggleMenu
+              key={i}
+              leftLabel={ev.time}
+              rightLabel={ev.title}
+              onClickArrow={() => alert(`"${ev.title}" 화살표 클릭!`)}
+              isOriginal={ev.isOriginal}
+            />
+          ))}
+        </ToggleMenusWrapper>
+      )}
+  
+      {/* BottomNavbar 영역 */}
+      <BottomNavbar />
+    </Container>
   );
-};
-
+}
 export default Calendar;
