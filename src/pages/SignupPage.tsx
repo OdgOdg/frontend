@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Header from "../components/Header";
 
 const SignupPage: React.FC = () => {
-  // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
   useEffect(() => {
     const originalPadding = document.body.style.paddingBottom;
     document.body.style.paddingBottom = "0px";
@@ -13,26 +12,61 @@ const SignupPage: React.FC = () => {
     };
   }, []);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSendCode = () => {
-    console.log("인증코드 전송:", email);
+  const handleSendCode = async () => {
+    try {
+      const response = await fetch("/api/v1/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, password }),
+      });
+
+      if (response.ok) {
+        alert("인증 코드가 이메일로 전송되었습니다.");
+      } else {
+        alert("인증코드 전송 실패");
+      }
+    } catch (error) {
+      console.error("인증 코드 요청 에러:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
   const handleVerifyCode = () => {
     console.log("인증번호 확인:", verificationCode);
   };
 
-  const handleSignup = (event: React.FormEvent) => {
+  const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
+
     if (password !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-    console.log("회원가입 성공!");
+
+    try {
+      const response = await fetch("/api/v1/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, password }),
+      });
+
+      if (response.ok) {
+        alert("회원가입 성공!");
+        window.location.href = "/login";
+      } else {
+        const data = await response.json();
+        alert(data.message || "회원가입 실패");
+      }
+    } catch (error) {
+      console.error("회원가입 에러:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -41,7 +75,7 @@ const SignupPage: React.FC = () => {
       <Container>
         <Form onSubmit={handleSignup}>
           <Label>이름</Label>
-          <Input type="text" placeholder="이름" required />
+          <Input type="text" placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} required />
 
           <Label>이메일</Label>
           <InputWrapper>
@@ -103,7 +137,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* height: 100vh; */
   padding: 20px;
   box-sizing: border-box;
 `;
