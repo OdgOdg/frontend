@@ -179,6 +179,7 @@ const MyProfile: React.FC = () => {
 
         {/* 프로필 관리 버튼 */}
         <ProfileManagementButton>프로필 관리</ProfileManagementButton>
+        <ProfileManagementButton>로그아웃</ProfileManagementButton>
       </Container>
       <BottomNavbar paddingBottom={false} />
     </>

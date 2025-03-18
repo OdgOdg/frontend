@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json(); // 서버에서 JWT 토큰을 받음
-        localStorage.setItem("token", data.token); // 토큰을 localStorage에 저장
+        localStorage.setItem("token", data); // 토큰을 localStorage에 저장
         alert("로그인 성공!");
       } else {
         alert("로그인 실패");
