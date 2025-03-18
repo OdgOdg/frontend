@@ -99,14 +99,14 @@ const PhotoImage = styled.img`
 
 const PhotoLabel = styled.span`
   position: absolute;
-  bottom: 0; /* 이미지 하단에서 약간의 여백 */
+  bottom: 0;
   left: 0;
   right: 0;
   text-align: center;
   font-size: 12px;
   color: #fff;
   font-weight: 500;
-  background: rgba(36, 36, 36, 0.5); /* 필요시 배경을 어둡게 하여 가독성 향상 */
+  background: rgba(36, 36, 36, 0.5);
   padding: 2px 0;
 `;
 
@@ -129,16 +129,23 @@ const ProfileManagementButton = styled.button`
 /* ------------------------- Component & Types ------------------------- */
 
 const MyProfile: React.FC = () => {
+  const handleLogout = () => {
+    // 쿠키에서 access token 및 refresh token 삭제
+    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    // 로그아웃 후 로그인 페이지로 이동
+    window.location.href = "/login";
+  };
+
   return (
     <>
       <Header title="마이페이지" />
       <Container>
-        {/* Header 아래에 오른쪽 상단 Settings 아이콘 */}
         <SettingsIconButton>
           <IoSettingsSharp size={24} color="#000" />
         </SettingsIconButton>
 
-        {/* 프로필 영역 */}
         <ProfileSection>
           <ProfileImage src={DefaultProfileImg} alt="" />
           <UserName>김지훈</UserName>
@@ -149,7 +156,6 @@ const MyProfile: React.FC = () => {
           </ButtonGroup>
         </ProfileSection>
 
-        {/* 사진 그리드 */}
         <PhotoGrid>
           <PhotoItem>
             <PhotoImage src={송도센트럴파크} alt="송도 센트럴파크" />
@@ -177,9 +183,8 @@ const MyProfile: React.FC = () => {
           </PhotoItem>
         </PhotoGrid>
 
-        {/* 프로필 관리 버튼 */}
         <ProfileManagementButton>프로필 관리</ProfileManagementButton>
-        <ProfileManagementButton>로그아웃</ProfileManagementButton>
+        <ProfileManagementButton onClick={handleLogout}>로그아웃</ProfileManagementButton>
       </Container>
       <BottomNavbar paddingBottom={false} />
     </>
