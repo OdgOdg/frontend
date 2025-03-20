@@ -30,8 +30,10 @@ const LoginPage: React.FC = () => {
         const data = await response.json(); // 서버에서 JWT 토큰을 받음
         localStorage.setItem("token", data); // 토큰을 localStorage에 저장
         alert("로그인 성공!");
+        window.location.href = "/";
       } else {
-        alert("로그인 실패");
+        const errorData = await response.json(); // 서버에서 에러 메시지 받기
+        alert(errorData.message || "로그인 실패"); // message가 없으면 기본 메시지 표시
       }
     } catch (error) {
       console.error("로그인 에러:", error);

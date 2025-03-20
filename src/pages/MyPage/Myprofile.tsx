@@ -129,13 +129,23 @@ const ProfileManagementButton = styled.button`
 /* ------------------------- Component & Types ------------------------- */
 
 const MyProfile: React.FC = () => {
-  const handleLogout = () => {
-    // 쿠키에서 access token 및 refresh token 삭제
-    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    // 로그아웃 후 로그인 페이지로 이동
-    window.location.href = "/login";
+      if (response.ok) {
+        alert("로그아웃 성공!");
+        window.location.replace("/login"); // 새로고침하면서 로그인 페이지로 이동
+      } else {
+        alert("로그아웃 실패");
+      }
+    } catch (error) {
+      console.error("로그아웃 오류:", error);
+      alert("로그아웃 중 오류 발생");
+    }
   };
 
   return (

@@ -19,25 +19,27 @@ const SignupPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSendCode = async () => {
-    try {
-      const response = await fetch("/api/v1/user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, password }),
-      });
+    alert("인증코드 받기 버튼 클릭됨 // 인증코드 API 연동 필요");
+    // try {
+    //   const response = await fetch("/api/v1/user", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ email, name, password }),
+    //   });
 
-      if (response.ok) {
-        alert("인증 코드가 이메일로 전송되었습니다.");
-      } else {
-        alert("인증코드 전송 실패");
-      }
-    } catch (error) {
-      console.error("인증 코드 요청 에러:", error);
-      alert("서버 오류가 발생했습니다.");
-    }
+    //   if (response.ok) {
+    //     alert("인증 코드가 이메일로 전송되었습니다.");
+    //   } else {
+    //     alert("인증코드 전송 실패");
+    //   }
+    // } catch (error) {
+    //   console.error("인증 코드 요청 에러:", error);
+    //   alert("서버 오류가 발생했습니다.");
+    // }
   };
 
   const handleVerifyCode = () => {
+    alert("인증번호 확인 버튼 클릭됨 // 인증번호 확인 기능 구현 필요");
     console.log("인증번호 확인:", verificationCode);
   };
 
