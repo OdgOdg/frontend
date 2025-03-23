@@ -99,14 +99,14 @@ const PhotoImage = styled.img`
 
 const PhotoLabel = styled.span`
   position: absolute;
-  bottom: 0; /* 이미지 하단에서 약간의 여백 */
+  bottom: 0;
   left: 0;
   right: 0;
   text-align: center;
   font-size: 12px;
   color: #fff;
   font-weight: 500;
-  background: rgba(36, 36, 36, 0.5); /* 필요시 배경을 어둡게 하여 가독성 향상 */
+  background: rgba(36, 36, 36, 0.5);
   padding: 2px 0;
 `;
 
@@ -129,16 +129,33 @@ const ProfileManagementButton = styled.button`
 /* ------------------------- Component & Types ------------------------- */
 
 const MyProfile: React.FC = () => {
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        alert("로그아웃 성공!");
+        window.location.replace("/login"); // 새로고침하면서 로그인 페이지로 이동
+      } else {
+        alert("로그아웃 실패");
+      }
+    } catch (error) {
+      console.error("로그아웃 오류:", error);
+      alert("로그아웃 중 오류 발생");
+    }
+  };
+
   return (
     <>
       <Header title="마이페이지" />
       <Container>
-        {/* Header 아래에 오른쪽 상단 Settings 아이콘 */}
         <SettingsIconButton>
           <IoSettingsSharp size={24} color="#000" />
         </SettingsIconButton>
 
-        {/* 프로필 영역 */}
         <ProfileSection>
           <ProfileImage src={DefaultProfileImg} alt="" />
           <UserName>김지훈</UserName>
@@ -149,7 +166,6 @@ const MyProfile: React.FC = () => {
           </ButtonGroup>
         </ProfileSection>
 
-        {/* 사진 그리드 */}
         <PhotoGrid>
           <PhotoItem>
             <PhotoImage src={송도센트럴파크} alt="송도 센트럴파크" />
@@ -177,8 +193,8 @@ const MyProfile: React.FC = () => {
           </PhotoItem>
         </PhotoGrid>
 
-        {/* 프로필 관리 버튼 */}
         <ProfileManagementButton>프로필 관리</ProfileManagementButton>
+        <ProfileManagementButton onClick={handleLogout}>로그아웃</ProfileManagementButton>
       </Container>
       <BottomNavbar paddingBottom={false} />
     </>
