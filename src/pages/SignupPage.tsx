@@ -17,9 +17,22 @@ const SignupPage: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError("비밀번호는 8~15자리이며, 특수문자를 포함해야 합니다.");
+      return false;
+    } else {
+      setPasswordError("");
+      return true;
+    }
+  };
 
   const handleSendCode = async () => {
     alert("인증코드 받기 버튼 클릭됨 // 인증코드 API 연동 필요");
+    // 인증코드 API 연동 시 아래 코드 살려서 쓰기
     // try {
     //   const response = await fetch("/api/v1/user", {
     //     method: "POST",
@@ -38,14 +51,18 @@ const SignupPage: React.FC = () => {
     // }
   };
 
-  const handleVerifyCode = () => {
-    alert("인증번호 확인 버튼 클릭됨 // 인증번호 확인 기능 구현 필요");
-    console.log("인증번호 확인:", verificationCode);
-  };
+  // const handleVerifyCode = () => {
+  //   alert("인증번호 확인 버튼 클릭됨 // 인증번호 확인 기능 구현 필요");
+  //   console.log("인증번호 확인:", verificationCode);
+  // };
 
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (!validatePassword(password)) {
+      alert("비밀번호 형식을 확인해주세요.");
+      return;
+    }
     if (password !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
@@ -88,12 +105,12 @@ const SignupPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <SmallButton type="button" onClick={handleSendCode}>
+            {/* <SmallButton type="button" onClick={handleSendCode}>
               인증코드 받기
-            </SmallButton>
+            </SmallButton> */}
           </InputWrapper>
 
-          <InputWrapper>
+          {/* <InputWrapper>
             <Input
               type="text"
               placeholder="인증번호"
@@ -104,17 +121,20 @@ const SignupPage: React.FC = () => {
             <SmallButton type="button" onClick={handleVerifyCode}>
               인증하기
             </SmallButton>
-          </InputWrapper>
+          </InputWrapper> */}
 
           <Label>비밀번호</Label>
           <Input
             type="password"
             placeholder="비밀번호"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              validatePassword(e.target.value);
+            }}
             required
           />
-
+          {passwordError && <ErrorText>{passwordError}</ErrorText>}
           <Label>비밀번호 확인</Label>
           <Input
             type="password"
@@ -154,6 +174,12 @@ const Label = styled.label`
   font-size: 14px;
   font-weight: bold;
   margin-top: 50px;
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 `;
 
 const Input = styled.input`
