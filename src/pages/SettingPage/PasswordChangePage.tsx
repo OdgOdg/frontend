@@ -65,6 +65,45 @@ const PasswordChange = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("정말로 회원탈퇴를 진행하시겠습니까?")) return;
+    try {
+      // 엑세스 토큰 값을 인풋으로 보내고자 함
+      const response = await fetch("/api/v1/user/{id}", {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("회원탈퇴에 실패했습니다.");
+      }
+
+      // 2️⃣ 로그아웃 API 호출 (쿠키 삭제 기대)
+      const logoutResponse = await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!logoutResponse.ok) {
+        throw new Error("로그아웃 과정에서 문제가 발생했습니다.");
+      }
+
+      alert("회원탈퇴가 완료되었습니다.");
+      localStorage.clear(); // 로컬스토리지 정리
+      window.location.href = "/"; // 홈 화면으로 이동
+    } catch (err) {
+      if (err instanceof Error) {
+        setServerError(err.message);
+      } else {
+        setServerError("알 수 없는 오류가 발생했습니다.");
+      }
+    }
+  };
+
   return (
     <>
       <Header title="비밀번호 & 계정" />
@@ -110,7 +149,9 @@ const PasswordChange = () => {
 
         <p style={{ padding: "15px" }} />
         <Label>계정</Label>
-        <DisabledButton disabled>회원탈퇴</DisabledButton>
+        <Button onClick={handleDeleteAccount} style={{ backgroundColor: "red" }}>
+          회원탈퇴
+        </Button>
       </Container>
       <BottomNavbar paddingBottom={false} />
     </>
