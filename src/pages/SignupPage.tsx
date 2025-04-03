@@ -14,7 +14,7 @@ const SignupPage: React.FC = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
+  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -31,30 +31,43 @@ const SignupPage: React.FC = () => {
   };
 
   const handleSendCode = async () => {
-    alert("인증코드 받기 버튼 클릭됨 // 인증코드 API 연동 필요");
-    // 인증코드 API 연동 시 아래 코드 살려서 쓰기
-    // try {
-    //   const response = await fetch("/api/v1/user", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ email, name, password }),
-    //   });
+    try {
+      const response = await fetch("api/v1/auth/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, password }),
+      });
 
-    //   if (response.ok) {
-    //     alert("인증 코드가 이메일로 전송되었습니다.");
-    //   } else {
-    //     alert("인증코드 전송 실패");
-    //   }
-    // } catch (error) {
-    //   console.error("인증 코드 요청 에러:", error);
-    //   alert("서버 오류가 발생했습니다.");
-    // }
+      if (response.ok) {
+        alert("인증 코드가 이메일로 전송되었습니다.");
+      } else {
+        alert("인증코드 전송 실패");
+      }
+    } catch (error) {
+      console.error("인증 코드 요청 에러:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
-  // const handleVerifyCode = () => {
-  //   alert("인증번호 확인 버튼 클릭됨 // 인증번호 확인 기능 구현 필요");
-  //   console.log("인증번호 확인:", verificationCode);
-  // };
+  const handleVerifyCode = async () => {
+    try {
+      const response = await fetch("api/v1/auth/code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }), // 인증코드 추가
+      });
+
+      if (response.ok) {
+        alert("이메일 인증에 성공하였습니다.");
+      } else {
+        const data = await response.json();
+        alert(data.message || "이메일 인증에 실패하였습니다.");
+      }
+    } catch (error) {
+      console.error("인증 코드 확인 오류:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
 
   const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -105,23 +118,17 @@ const SignupPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            {/* <SmallButton type="button" onClick={handleSendCode}>
+            <SmallButton type="button" onClick={handleSendCode}>
               인증코드 받기
-            </SmallButton> */}
+            </SmallButton>
           </InputWrapper>
 
-          {/* <InputWrapper>
-            <Input
-              type="text"
-              placeholder="인증번호"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              required
-            />
+          <InputWrapper>
+            <Input type="text" placeholder="인증번호" value={code} onChange={(e) => setCode(e.target.value)} required />
             <SmallButton type="button" onClick={handleVerifyCode}>
               인증하기
             </SmallButton>
-          </InputWrapper> */}
+          </InputWrapper>
 
           <Label>비밀번호</Label>
           <Input
