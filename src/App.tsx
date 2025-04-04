@@ -1,4 +1,5 @@
 import "./App.css";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import Layout from "./Layout.tsx";
@@ -28,6 +29,7 @@ import ReviewRead from "./pages/ReviewPage/ReviewRead.tsx";
 import LoginPage from "./pages/Loginpage.tsx";
 import SignupPage from "./pages/SignupPage.tsx";
 import Map from "./pages/MapPage/Map.tsx";
+import UpdateSchedule from "./pages/CalendarPage/UpdateSchedule.tsx";
 
 function AppLayout() {
   return (
@@ -40,6 +42,8 @@ function AppLayout() {
 }
 
 function App() {
+  const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth() + 1);
   return (
     <div>
       <Router>
@@ -61,7 +65,8 @@ function App() {
             <Route path="/chatbot" element={<ChatBotPage />} />
             <Route path="/chatroom" element={<ChatRoomPage />} />
             <Route path="/addschedule" element={<AddSchedule />} />
-            <Route path="/calendar" element={<Calendar year={2025} month={2} />} />
+            <Route path="/updateschedule" element={<UpdateSchedule />} />
+            <Route path="/calendar" element={<Calendar year={currentYear} month={currentMonth} />} />
             <Route path="/myprofile" element={<MyProfile />} />
             <Route path="/eventviewatmap" element={<EventViewAtMap />} />
             <Route path="/incomingcall" element={<IncomingCall />} />

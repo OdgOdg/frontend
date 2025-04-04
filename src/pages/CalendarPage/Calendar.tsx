@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { format } from "date-fns";
-import { sampleEvents } from "./EventData";
+import { formatInTimeZone } from "date-fns-tz";
 import ToggleMenu from "./EventToggle";
 import { CiCirclePlus } from "react-icons/ci";
 import { useSwipeable } from "react-swipeable";
 import BottomNavbar from "../../components/BottomNavbar";
+import { useNavigate } from "react-router-dom";
+import EventModal from "./EventModal";
+import axios from "axios";
 
+// Styled-components
 const CalendarContentWrapper = styled.div`
   position: relative;
 `;
@@ -42,8 +46,9 @@ const WeekdaysRow = styled.div`
   border-bottom: 1px solid #e9e9e9;
 `;
 
-const WeekdayCell = styled.div<{ isSunday?: boolean }>`
-  color: ${({ isSunday }) => (isSunday ? "#EF0707" : "inherit")};
+// transient prop: $isSunday
+const WeekdayCell = styled.div<{ $isSunday?: boolean }>`
+  color: ${({ $isSunday }) => ($isSunday ? "#EF0707" : "inherit")};
 `;
 
 const CalendarGrid = styled.div`
@@ -55,18 +60,19 @@ const CalendarGrid = styled.div`
   column-gap: 0;
 `;
 
+// transient props: $isCurrentMonth, $isToday, $isSelected
 const DayCell = styled.div<{
-  isCurrentMonth?: boolean;
-  isToday?: boolean;
-  isSelected?: boolean;
+  $isCurrentMonth?: boolean;
+  $isToday?: boolean;
+  $isSelected?: boolean;
 }>`
   min-height: 80px;
   padding: 0.5rem;
   box-sizing: border-box;
   position: relative;
-  border: 1px solid ${({ isSelected }) => (isSelected ? "black" : "#DDDDDD")};
-  color: ${({ isCurrentMonth }) => (isCurrentMonth ? "#333" : "#bbb")};
-  background-color: ${({ isToday }) => (isToday ? "#D9D9D9" : "transparent")};
+  border: 1px solid ${({ $isSelected }) => ($isSelected ? "black" : "#DDDDDD")};
+  color: ${({ $isCurrentMonth }) => ($isCurrentMonth ? "#333" : "#bbb")};
+  background-color: ${({ $isToday }) => ($isToday ? "#D9D9D9" : "transparent")};
   cursor: pointer;
 `;
 
@@ -79,10 +85,23 @@ const EventWrapper = styled.div`
   flex-direction: column;
 `;
 
-const EventTag = styled.div<{ isOriginal?: boolean }>`
-  background-color: ${({ isOriginal }) => (isOriginal ? "#00AA5B" : "#4771EC")};
+// transient prop: $isOriginal
+const EventTag = styled.div<{ $isOriginal?: boolean }>`
+  background-color: ${({ $isOriginal }) => ($isOriginal ? "#00AA5B" : "#4771EC")};
   color: #fff;
-  font-size: 0.5rem;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  margin-top: 0.3rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const MoreTag = styled.div`
+  background-color: #bbb;
+  color: #fff;
+  font-size: 0.7rem;
   padding: 0.2rem 0.4rem;
   margin-top: 0.3rem;
   text-align: center;
@@ -99,10 +118,9 @@ const ToggleMenusWrapper = styled.div`
   margin-top: 1rem;
 `;
 
-// FloatingButton은 이제 CalendarContentWrapper의 자식으로, 그 내부에서 절대 위치로 고정됨
 const FloatingButton = styled.button`
   position: absolute;
-  bottom: -4rem; /* CalendarContentWrapper 내부 기준 */
+  bottom: -4rem;
   right: 1rem;
   width: 40px;
   height: 40px;
@@ -116,6 +134,9 @@ const FloatingButton = styled.button`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 999;
+  &:hover {
+    opacity: 0.9;
+  }
 `;
 
 const NavigationContainer = styled.div`
@@ -132,7 +153,17 @@ const NavButton = styled.button`
   padding: 0.25rem;
 `;
 
-/* ------------------------- Component & Types ------------------------- */
+// 이벤트 데이터 타입
+
+interface CalendarEvent {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  memo: string;
+  isOrigin: boolean;
+  isAllday: boolean;
+}
 
 interface CalendarProps {
   year: number;
@@ -140,27 +171,50 @@ interface CalendarProps {
 }
 
 const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
+  const navigate = useNavigate();
+
+  // API에서 가져온 이벤트 상태
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date(year, month - 1, 1));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [modalEvent, setModalEvent] = useState<CalendarEvent | null>(null);
+
+  useEffect(() => {
+    axios
+      .get("/api/v1/events")
+      .then((response) => {
+        setEvents(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
+
+  // 날짜 비교 시 KST로 변환하여 비교 (UTC 문자열을 KST로 변환)
+  const getEventsByDate = (date: Date) => {
+    const formattedDate = formatInTimeZone(date, "Asia/Seoul", "yyyy-MM-dd");
+    return events.filter((ev) => {
+      const eventStart = formatInTimeZone(new Date(ev.startDate), "Asia/Seoul", "yyyy-MM-dd");
+      const eventEnd = formatInTimeZone(new Date(ev.endDate), "Asia/Seoul", "yyyy-MM-dd");
+      return formattedDate >= eventStart && formattedDate <= eventEnd;
+    });
+  };
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
   const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1);
   const lastDayOfMonth = new Date(currentYear, currentMonth, 0);
-  const startWeekday = firstDayOfMonth.getDay(); // 0=일 ~ 6=토
+  const startWeekday = firstDayOfMonth.getDay();
   const totalDays = lastDayOfMonth.getDate();
 
   const daysArray: Date[] = [];
-
   for (let i = 0; i < startWeekday; i++) {
     daysArray.push(new Date(currentYear, currentMonth - 1, 1 - (startWeekday - i)));
   }
-
   for (let i = 1; i <= totalDays; i++) {
     daysArray.push(new Date(currentYear, currentMonth - 1, i));
   }
-
   const leftoverDays = 7 - (daysArray.length % 7);
   if (leftoverDays < 7) {
     for (let i = 1; i <= leftoverDays; i++) {
@@ -177,11 +231,6 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     );
   };
 
-  const getEventsByDate = (date: Date) => {
-    const yyyymmdd = format(date, "yyyy-MM-dd");
-    return sampleEvents.filter((ev) => ev.date === yyyymmdd);
-  };
-
   const handleDayClick = (day: Date) => {
     if (selectedDate && selectedDate.getTime() === day.getTime()) {
       setSelectedDate(null);
@@ -191,9 +240,8 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   };
 
   const selectedEvents = selectedDate ? getEventsByDate(selectedDate) : [];
-
   const handleAddEvent = () => {
-    alert("새로운 일정 추가 버튼을 눌렀습니다!");
+    navigate("/addschedule");
   };
 
   const handlers = useSwipeable({
@@ -203,7 +251,6 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
     onSwipedLeft: () => {
       setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1));
     },
-    // 오류있긴한데 해결방법을 정확히 모르고 일단 실행에 문제없어서 놔뒀습니다..
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
@@ -211,38 +258,32 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+  // 하루에 표시할 총 태그 수 (이벤트 태그 + more 태그 포함)
+  const MAX_DISPLAYED = 2;
+
   return (
     <Container>
       <CalendarContentWrapper>
-        {/* 달력 헤더, 날짜 셀 등 주요 컨텐츠 */}
         <CalendarHeader>
           <MonthYearText>{`${monthLabels[currentMonth - 1]} ${currentYear}`}</MonthYearText>
           <NavigationContainer>
-            <NavButton
-              onClick={() =>
-                setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))
-              }
-            >
+            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))}>
               {"<"}
             </NavButton>
-            <NavButton
-              onClick={() =>
-                setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))
-              }
-            >
+            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))}>
               {">"}
             </NavButton>
           </NavigationContainer>
         </CalendarHeader>
-  
+
         <WeekdaysRow>
           {weekdayLabels.map((label) => (
-            <WeekdayCell key={label} isSunday={label === "Sun"}>
+            <WeekdayCell key={label} $isSunday={label === "Sun"}>
               {label}
             </WeekdayCell>
           ))}
         </WeekdaysRow>
-  
+
         <div {...handlers}>
           <CalendarGrid>
             {daysArray.map((day, idx) => {
@@ -250,23 +291,29 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
               const isToday = checkIsToday(day);
               const isSelected = selectedDate && selectedDate.getTime() === day.getTime();
               const dailyEvents = getEventsByDate(day);
-    
+              let eventsToShow = dailyEvents;
+              if (dailyEvents.length > MAX_DISPLAYED) {
+                eventsToShow = dailyEvents.slice(0, MAX_DISPLAYED - 1);
+              }
               return (
                 <DayCell
                   key={idx}
-                  isCurrentMonth={isCurrentMonth}
-                  isToday={isToday}
-                  isSelected={!!isSelected}
+                  $isCurrentMonth={isCurrentMonth}
+                  $isToday={isToday}
+                  $isSelected={!!isSelected}
                   onClick={() => handleDayClick(day)}
                 >
                   {day.getDate()}
                   {dailyEvents.length > 0 && (
                     <EventWrapper>
-                      {dailyEvents.map((ev, i) => (
-                        <EventTag key={i} isOriginal={ev.isOriginal}>
+                      {eventsToShow.map((ev) => (
+                        <EventTag key={ev.id} $isOriginal={ev.memo === "메모"}>
                           {ev.title}
                         </EventTag>
                       ))}
+                      {dailyEvents.length > MAX_DISPLAYED && (
+                        <MoreTag>+{dailyEvents.length - (MAX_DISPLAYED - 1)} more</MoreTag>
+                      )}
                     </EventWrapper>
                   )}
                 </DayCell>
@@ -274,31 +321,31 @@ const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
             })}
           </CalendarGrid>
         </div>
-  
-        {/* FloatingButton은 CalendarContentWrapper 내부에 위치하므로 ToggleMenusWrapper가 렌더링되어도 영향을 받지 않음 */}
+
         <FloatingButton onClick={handleAddEvent}>
           <CiCirclePlus size={30} />
         </FloatingButton>
       </CalendarContentWrapper>
-  
-      {/* 선택된 날짜의 이벤트 ToggleMenusWrapper는 Container 내부에서 별도로 렌더링 */}
+
       {selectedEvents.length > 0 && selectedDate && (
         <ToggleMenusWrapper>
-          {selectedEvents.map((ev, i) => (
+          {selectedEvents.map((ev) => (
             <ToggleMenu
-              key={i}
-              leftLabel={ev.time}
+              key={ev.id}
+              leftLabel={ev.isAllday ? "종일" : formatInTimeZone(new Date(ev.startDate), "Asia/Seoul", "HH:mm")}
               rightLabel={ev.title}
-              onClickArrow={() => alert(`"${ev.title}" 화살표 클릭!`)}
-              isOriginal={ev.isOriginal}
+              onClickArrow={() => setModalEvent(ev)}
+              isOriginal={ev.memo === "메모"}
             />
           ))}
         </ToggleMenusWrapper>
       )}
-  
-      {/* BottomNavbar 영역 */}
+
       <BottomNavbar />
+
+      {modalEvent && <EventModal event={modalEvent} selectedDate={selectedDate} onClose={() => setModalEvent(null)} />}
     </Container>
   );
-}
+};
+
 export default Calendar;

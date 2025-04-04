@@ -2,8 +2,9 @@ import React, { useState, FormEvent } from "react";
 import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 
 /* ---------------------------- Styled Components ---------------------------- */
 
@@ -13,6 +14,24 @@ const Container = styled.div`
   flex-direction: column;
   padding: 16px;
   margin: 0 auto;
+  position: relative;
+`;
+
+const DeleteButton = styled.button`
+  width: 25%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: rgb(234, 17, 17);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+  &:hover {
+    opacity: 0.9;
+  }
 `;
 
 const Label = styled.label`
@@ -141,28 +160,37 @@ const SaveButton = styled.button`
 
 /* ------------------------- Component & Types ------------------------- */
 
-interface AddScheduleProps {
-  // 필요하다면 부모 컴포넌트로부터 내려받을 props 정의
-}
+interface AddScheduleProps {}
 
 interface FormData {
   title: string;
   isAllDay: boolean;
   startDateTime: string;
   endDateTime: string;
+  alarm: string;
   memo: string;
 }
 
-const AddSchedule: React.FC<AddScheduleProps> = () => {
-  const [formData, setFormData] = useState<FormData>({
-    title: "",
-    isAllDay: false,
-    startDateTime: "",
-    endDateTime: "",
-    memo: "",
-  });
+const UpdateSchedule: React.FC<AddScheduleProps> = () => {
+  // Calendar.tsx에서 전달한 이벤트 데이터를 useLocation으로 받습니다.
+  const location = useLocation();
+  const eventData = location.state;
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  // datetime-local 입력은 "yyyy-MM-dd'T'HH:mm" 형식이어야 합니다.
+  const formattedStartDateTime =
+    eventData && eventData.startDate ? format(new Date(eventData.startDate), "yyyy-MM-dd'T'HH:mm") : "";
+  const formattedEndDateTime =
+    eventData && eventData.endDate ? format(new Date(eventData.endDate), "yyyy-MM-dd'T'HH:mm") : "";
+
+  const [formData, setFormData] = useState<FormData>({
+    title: eventData?.title || "",
+    isAllDay: false,
+    startDateTime: formattedStartDateTime,
+    endDateTime: formattedEndDateTime,
+    alarm: "없음",
+    memo: eventData?.memo || "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -170,7 +198,6 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
     if (type === "checkbox") {
       val = (e.target as HTMLInputElement).checked;
     }
-
     setFormData((prev) => ({
       ...prev,
       [name]: val,
@@ -192,32 +219,54 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
       return;
     }
 
+    // 수정할 이벤트의 id가 필요합니다.
+    if (!eventData || !eventData.id) {
+      alert("수정할 이벤트 정보가 없습니다.");
+      return;
+    }
+
     const requestBody = {
       title: formData.title,
       startDate: new Date(formData.startDateTime).toISOString(),
       endDate: new Date(formData.endDateTime).toISOString(),
       memo: formData.memo,
-      isAllday: formData.isAllDay, // 토글이 활성화되어 있으면 true, 아니면 false
-      isOrigin: false, // 항상 false로 전송
+      isAllday: formData.isAllDay, // 토글 상태에 따라 true/false 전송
+      isOrigin: false, // 항상 false 전송
     };
 
     try {
-      const response = await axios.post("/api/v1/events", requestBody);
-      console.log("저장 성공:", response.data);
-      alert("일정이 성공적으로 저장되었습니다!");
-
-      // 저장 성공 후 이전 페이지로 이동
+      const response = await axios.patch(`/api/v1/events/${eventData.id}`, requestBody);
+      console.log("수정 성공:", response.data);
+      alert("일정이 성공적으로 수정되었습니다!");
       navigate(-1);
     } catch (error) {
-      console.error("저장 오류:", error);
-      alert("일정 저장에 실패했습니다. 다시 시도해주세요.");
+      console.error("수정 오류:", error);
+      alert("일정 수정에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!eventData || !eventData.id) {
+      alert("삭제할 이벤트 정보가 없습니다.");
+      return;
+    }
+    if (!window.confirm("정말로 이 일정을 삭제하시겠습니까?")) return;
+    try {
+      const response = await axios.delete(`/api/v1/events/${eventData.id}`);
+      console.log("삭제 성공:", response.data);
+      alert("일정이 성공적으로 삭제되었습니다!");
+      navigate(-1);
+    } catch (error) {
+      console.error("삭제 오류:", error);
+      alert("일정 삭제에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
   return (
     <>
-      <Header title="일정 추가" />
+      <Header title="일정 편집" />
       <Container>
+        <DeleteButton onClick={handleDelete}>일정 삭제</DeleteButton>
         <form onSubmit={handleSubmit}>
           <Label htmlFor="title">일정 제목</Label>
           <TextInput
@@ -268,4 +317,4 @@ const AddSchedule: React.FC<AddScheduleProps> = () => {
   );
 };
 
-export default AddSchedule;
+export default UpdateSchedule;
