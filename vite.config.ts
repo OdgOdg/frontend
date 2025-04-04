@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000, // 기본 포트를 3000으로 변경
+  proxy : {
+    "/api" : "http://localhost:8001/",
   },
+},
   // resolve: {
   //   alias: {
   //     '@': path.resolve(__dirname, './src'),
