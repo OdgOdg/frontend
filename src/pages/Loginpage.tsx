@@ -1,8 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Header from "../components/Header";
 
 const LoginPage: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
   useEffect(() => {
     const originalPadding = document.body.style.paddingBottom;
@@ -13,9 +16,29 @@ const LoginPage: React.FC = () => {
     };
   }, []);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log("로그인 버튼 클릭");
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // 기본 폼 제출 방지
+
+    try {
+      const response = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json(); // 서버에서 JWT 토큰을 받음
+        localStorage.setItem("token", data.accessToken); // 토큰을 localStorage에 저장
+        alert("로그인 성공!");
+        window.location.href = "/";
+      } else {
+        const errorData = await response.json(); // 서버에서 에러 메시지 받기
+        alert(errorData.message || "로그인 실패"); // message가 없으면 기본 메시지 표시
+      }
+    } catch (error) {
+      console.error("로그인 에러:", error);
+      alert("로그인 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -33,10 +56,22 @@ const LoginPage: React.FC = () => {
         </Text>
         <Form onSubmit={handleSubmit}>
           <Label>이메일</Label>
-          <Input type="email" placeholder="이메일 입력" required />
+          <Input
+            type="email"
+            placeholder="이메일 입력"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
           <Label>비밀번호</Label>
-          <Input type="password" placeholder="비밀번호 입력" required />
+          <Input
+            type="password"
+            placeholder="비밀번호 입력"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
           <LoginButton type="submit">로그인</LoginButton>
         </Form>

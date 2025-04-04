@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Header from "../components/Header";
 
 const SignupPage: React.FC = () => {
-  // index.css line9 => "padding-bottom:60px" 스타일 미적용을 위한 useEffect
   useEffect(() => {
     const originalPadding = document.body.style.paddingBottom;
     document.body.style.paddingBottom = "0px";
@@ -13,26 +12,80 @@ const SignupPage: React.FC = () => {
     };
   }, []);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-  const handleSendCode = () => {
-    console.log("인증코드 전송:", email);
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError("비밀번호는 8~15자리이며, 특수문자를 포함해야 합니다.");
+      return false;
+    } else {
+      setPasswordError("");
+      return true;
+    }
   };
 
-  const handleVerifyCode = () => {
-    console.log("인증번호 확인:", verificationCode);
+  const handleSendCode = async () => {
+    alert("인증코드 받기 버튼 클릭됨 // 인증코드 API 연동 필요");
+    // 인증코드 API 연동 시 아래 코드 살려서 쓰기
+    // try {
+    //   const response = await fetch("/api/v1/user", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ email, name, password }),
+    //   });
+
+    //   if (response.ok) {
+    //     alert("인증 코드가 이메일로 전송되었습니다.");
+    //   } else {
+    //     alert("인증코드 전송 실패");
+    //   }
+    // } catch (error) {
+    //   console.error("인증 코드 요청 에러:", error);
+    //   alert("서버 오류가 발생했습니다.");
+    // }
   };
 
-  const handleSignup = (event: React.FormEvent) => {
+  // const handleVerifyCode = () => {
+  //   alert("인증번호 확인 버튼 클릭됨 // 인증번호 확인 기능 구현 필요");
+  //   console.log("인증번호 확인:", verificationCode);
+  // };
+
+  const handleSignup = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (!validatePassword(password)) {
+      alert("비밀번호 형식을 확인해주세요.");
+      return;
+    }
     if (password !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-    console.log("회원가입 성공!");
+
+    try {
+      const response = await fetch("/api/v1/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name, password }),
+      });
+
+      if (response.ok) {
+        alert("회원가입 성공!");
+        window.location.href = "/login";
+      } else {
+        const data = await response.json();
+        alert(data.message || "회원가입 실패");
+      }
+    } catch (error) {
+      console.error("회원가입 에러:", error);
+      alert("서버 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -41,7 +94,7 @@ const SignupPage: React.FC = () => {
       <Container>
         <Form onSubmit={handleSignup}>
           <Label>이름</Label>
-          <Input type="text" placeholder="이름" required />
+          <Input type="text" placeholder="이름" value={name} onChange={(e) => setName(e.target.value)} required />
 
           <Label>이메일</Label>
           <InputWrapper>
@@ -52,12 +105,12 @@ const SignupPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <SmallButton type="button" onClick={handleSendCode}>
+            {/* <SmallButton type="button" onClick={handleSendCode}>
               인증코드 받기
-            </SmallButton>
+            </SmallButton> */}
           </InputWrapper>
 
-          <InputWrapper>
+          {/* <InputWrapper>
             <Input
               type="text"
               placeholder="인증번호"
@@ -68,17 +121,20 @@ const SignupPage: React.FC = () => {
             <SmallButton type="button" onClick={handleVerifyCode}>
               인증하기
             </SmallButton>
-          </InputWrapper>
+          </InputWrapper> */}
 
           <Label>비밀번호</Label>
           <Input
             type="password"
             placeholder="비밀번호"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              validatePassword(e.target.value);
+            }}
             required
           />
-
+          {passwordError && <ErrorText>{passwordError}</ErrorText>}
           <Label>비밀번호 확인</Label>
           <Input
             type="password"
@@ -103,7 +159,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* height: 100vh; */
   padding: 20px;
   box-sizing: border-box;
 `;
@@ -119,6 +174,12 @@ const Label = styled.label`
   font-size: 14px;
   font-weight: bold;
   margin-top: 50px;
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
 `;
 
 const Input = styled.input`
