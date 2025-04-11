@@ -6,6 +6,7 @@ import eventImage from "../images/mainPage/event.png";
 import sightsImage from "../images/mainPage/sights.png";
 import BottomNavbar from "../components/BottomNavbar";
 import React, { useState, useRef } from "react";
+import SearchWithSuggestions from "./SearchWithSuggestions";
 
 const MainPage: React.FC = () => {
   const [banners, setBanners] = useState([
@@ -44,7 +45,7 @@ const MainPage: React.FC = () => {
     <Container>
       <MainPageHeader>
         <Logo>ITG</Logo>
-        <SearchBar placeholder="Search" />
+        <SearchWithSuggestions />
         <Icon>֎</Icon>
       </MainPageHeader>
       <Section>
