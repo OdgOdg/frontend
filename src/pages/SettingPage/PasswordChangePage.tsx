@@ -149,7 +149,7 @@ const PasswordChange = () => {
 
         <p style={{ padding: "15px" }} />
         <Label>계정</Label>
-        <Button onClick={handleDeleteAccount} style={{ backgroundColor: "red" }}>
+        <Button onClick={handleDeleteAccount} style={{ backgroundColor: "#e34646" }}>
           회원탈퇴
         </Button>
       </Container>
@@ -159,7 +159,7 @@ const PasswordChange = () => {
 };
 
 const Container = styled.div`
-  width: 100%;
+  width: 70%;
   max-width: 400px;
   margin: auto;
   padding: 20px;
@@ -190,7 +190,7 @@ const InfoText = styled.p`
 `;
 
 const ErrorText = styled.p`
-  color: red;
+  color: #583b3b;
   font-size: 14px;
   margin-top: 5px;
 `;
