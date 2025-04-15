@@ -1,25 +1,99 @@
 /*global kakao*/
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import ReactDOMServer from "react-dom/server";
-import 송도센트럴파크 from "../../images/MapPage/송도센트럴파크.jpg";
-import 개항장 from "../../images/MapPage/개항장.jpg";
-import 계양산 from "../../images/MapPage/계양산.jpg";
-import 월미도 from "../../images/MapPage/월미도.jpg";
-import 을왕리해수욕장 from "../../images/MapPage/을왕리해수욕장.jpg";
-import 차이나타운 from "../../images/MapPage/차이나타운.jpg";
-import customMarkerImageSrc from "../../images/MapPage/마커이미지.png"; // PNG 파일 임포트
+import { CiLocationArrow1 } from "react-icons/ci";
+import { FiRefreshCw, FiX } from "react-icons/fi";
+import customMarkerImageSrc from "../../images/MapPage/마커이미지.png";
 import BottomNavbar from "../../components/BottomNavbar";
 
 // kakao 객체 타입이 없으면 any로 선언
 declare const kakao: any;
 
-// Styled Components (CustomOverlay.css를 기반으로 변환)
+/*--------------------- Styled Components ----------------------*/
+
+// 고정된 BottomNavbar 래퍼
+const FixedNavbarWrapper = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+`;
+
+// 지도 상단의 검색바 컨테이너
+const SearchBarContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 45%;
+  transform: translateX(-50%);
+  width: 60%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+`;
+
+// 검색 입력창을 감싸는 Wrapper (아이콘 배치를 위해 relative 처리)
+const SearchInputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+// 검색 입력창 스타일
+const SearchInput = styled.input`
+  width: 100%;
+  height: 40px;
+  padding: 0 40px 0 12px;  /* 오른쪽에 아이콘이 들어갈 공간 확보 */
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  outline: none;
+`;
+
+// 검색창 텍스트를 지우기 위한 'x' 아이콘 버튼
+const ClearButton = styled.button`
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+`;
+
+// 드롭다운 컨테이너 (자동완성 결과)
+const DropdownContainer = styled.div`
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+`;
+
+// 드롭다운 항목 스타일
+const DropdownItem = styled.div`
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+// 오버레이 관련 스타일들
 const Wrap = styled.div`
   position: relative;
-  bottom: 55px; /* 지도 위에서 말풍선을 살짝 올려주고 싶다면 사용 */
+  bottom: 55px;
   width: 180px;
-
   & * {
     margin: 0;
     padding: 0;
@@ -74,8 +148,8 @@ const Desc = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 100%; /* 부모의 전체 너비를 사용 */
-  text-align: center; /* 텍스트 중앙 정렬 (필요 시) */
+  width: 100%;
+  text-align: center;
 `;
 
 const Link = styled.a`
@@ -96,13 +170,57 @@ const StyledButton = styled.button`
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
-
   &:hover {
     opacity: 0.9;
   }
 `;
 
-// OverlayContent 컴포넌트의 props 타입 정의
+// 오른쪽 하단의 "현재 위치로 이동" 버튼 스타일
+const CurrentLocationButton = styled.button`
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  z-index: 999;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
+/** 중앙 하단에 "현재 위치에서 검색" 버튼 스타일 **/
+const SearchFromCurrentLocationButton = styled.button`
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 100px;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 999;
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+/*--------------------- OverlayContent 컴포넌트 ----------------------*/
 interface OverlayContentProps {
   index: number;
   title: string;
@@ -110,7 +228,12 @@ interface OverlayContentProps {
   mapLink: string;
 }
 
-const OverlayContent: React.FC<OverlayContentProps> = ({ index, title, imageSrc, mapLink }) => (
+const OverlayContent: React.FC<OverlayContentProps> = ({
+  index,
+  title,
+  imageSrc,
+  mapLink,
+}) => (
   <Wrap>
     <Info>
       <Title>
@@ -132,162 +255,206 @@ const OverlayContent: React.FC<OverlayContentProps> = ({ index, title, imageSrc,
   </Wrap>
 );
 
+/*--------------------- Main Map 컴포넌트 ----------------------*/
 const Map: React.FC = () => {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<any>(null);
-  const overlaysRef = useRef<any[]>([]);
+  // API에서 생성한 마커들을 관리하기 위한 배열
+  const apiMarkersRef = useRef<any[]>([]);
+  // 현재 표시된 오버레이를 저장하는 Ref
+  const currentOverlayRef = useRef<any>(null);
+  // 검색 입력값 및 드롭다운 결과 상태
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
+  // (기존 기능) 자동완성: 입력이 변경될 때마다 드롭다운 결과 업데이트
+  const handleAutoComplete = async () => {
+    if (!searchQuery.trim() || !mapInstanceRef.current) {
+      setSearchResults([]);
+      return;
+    }
+    const encodedTitle = encodeURIComponent(searchQuery.trim());
+    const apiUrl = `/api/v1/sights/title/${encodedTitle}`;
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error("API 요청 실패");
+      const results = await response.json();
+      setSearchResults(results);
+    } catch (error) {
+      console.error("자동완성 검색 중 에러 발생:", error);
+    }
+  };
+
+  // 디바운스 적용: searchQuery 변경 시 300ms 후에 handleAutoComplete 실행
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleAutoComplete();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // (기능1) 엔터키를 누르면 해당 검색어에 맞는 전체 관광지 마커 표시
+  const handleSearchMarkers = async () => {
+    if (!searchQuery.trim() || !mapInstanceRef.current) return;
+    const encodedTitle = encodeURIComponent(searchQuery.trim());
+    const apiUrl = `/api/v1/sights/title/${encodedTitle}`;
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error("API 요청 실패");
+      const results = await response.json();
+
+      // 기존 마커 및 오버레이 제거
+      apiMarkersRef.current.forEach((marker) => marker.setMap(null));
+      apiMarkersRef.current = [];
+      if (currentOverlayRef.current) {
+        currentOverlayRef.current.setMap(null);
+      }
+
+      // 커스텀 마커 이미지 생성
+      const customMarkerSize = new kakao.maps.Size(30, 30);
+      const customMarkerOptions = { offset: new kakao.maps.Point(20, 0) };
+      const customMarkerImage = new kakao.maps.MarkerImage(
+        customMarkerImageSrc,
+        customMarkerSize,
+        customMarkerOptions
+      );
+
+      // 검색 결과의 모든 관광지에 대해 마커 생성
+      results.forEach((site: any, idx: number) => {
+        const position = new kakao.maps.LatLng(site.mapy, site.mapx);
+        const marker = new kakao.maps.Marker({
+          map: mapInstanceRef.current,
+          position: position,
+          image: customMarkerImage,
+        });
+
+        kakao.maps.event.addListener(marker, "click", function () {
+          if (currentOverlayRef.current) {
+            currentOverlayRef.current.setMap(null);
+          }
+          const overlayContent = ReactDOMServer.renderToString(
+            <OverlayContent
+              index={idx}
+              title={site.title}
+              imageSrc={site.firstimage || ""}
+              mapLink={`http://localhost:8001/sight/${site.id}`}
+            />
+          );
+          const overlay = new kakao.maps.CustomOverlay({
+            content: overlayContent,
+            map: mapInstanceRef.current,
+            position: position,
+          });
+          currentOverlayRef.current = overlay;
+          setTimeout(() => {
+            const closeBtn = document.getElementById(`closeBtn_${idx}`);
+            if (closeBtn) {
+              const closeOverlay = () => {
+                overlay.setMap(null);
+                currentOverlayRef.current = null;
+              };
+              closeBtn.addEventListener("click", closeOverlay);
+              closeBtn.addEventListener("touchend", closeOverlay);
+            }
+          }, 0);
+        });
+        apiMarkersRef.current.push(marker);
+      });
+
+      // 검색 후 드롭다운 및 검색창 클리어
+      setSearchResults([]);
+      setSearchQuery("");
+    } catch (error) {
+      console.error("전체 관광지 마커 검색 중 에러 발생:", error);
+    }
+  };
+
+  // (기능2) 드롭다운 항목 선택 시 해당 관광지 중심으로 지도 이동 및 오버레이 표시
+  const handleSelectResult = (site: any) => {
+    // 기존 마커 및 오버레이 제거
+    apiMarkersRef.current.forEach((marker) => marker.setMap(null));
+    apiMarkersRef.current = [];
+    if (currentOverlayRef.current) {
+      currentOverlayRef.current.setMap(null);
+    }
+    const position = new kakao.maps.LatLng(site.mapy, site.mapx);
+
+    const customMarkerSize = new kakao.maps.Size(30, 30);
+    const customMarkerOptions = { offset: new kakao.maps.Point(20, 0) };
+    const customMarkerImage = new kakao.maps.MarkerImage(
+      customMarkerImageSrc,
+      customMarkerSize,
+      customMarkerOptions
+    );
+    const marker = new kakao.maps.Marker({
+      map: mapInstanceRef.current,
+      position: position,
+      image: customMarkerImage,
+    });
+    apiMarkersRef.current.push(marker);
+
+    // 지도 이동: panTo를 약간 지연시켜 자연스러운 애니메이션 효과를 부여합니다.
+    setTimeout(() => {
+      mapInstanceRef.current.panTo(position);
+      // 지도 이동 후 오버레이 생성
+      const overlayContent = ReactDOMServer.renderToString(
+        <OverlayContent
+          index={0}
+          title={site.title}
+          imageSrc={site.firstimage || ""}
+          mapLink={`http://localhost:8001/sight/${site.id}`}
+        />
+      );
+      const overlay = new kakao.maps.CustomOverlay({
+        content: overlayContent,
+        map: mapInstanceRef.current,
+        position: position,
+      });
+      currentOverlayRef.current = overlay;
+    }, 200);
+
+    // 드롭다운 및 검색창 클리어
+    setSearchResults([]);
+    setSearchQuery("");
+  };
+
+  /** 지도 초기화 **/
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     const options = {
       center: new kakao.maps.LatLng(37.45687, 126.705345),
       level: 8,
-      // 모바일에서도 드래그 가능하도록 기본값 설정 (대부분 기본값이지만 명시적으로 설정)
       draggable: true,
     };
 
-    // 지도 생성
     const map = new kakao.maps.Map(mapContainerRef.current, options);
     mapInstanceRef.current = map;
-    // 드래그 활성화 (추가 보장)
     map.setDraggable(true);
 
-    // 확대/축소 컨트롤 추가
     const zoomControl = new kakao.maps.ZoomControl();
     map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
 
-    // 현재 위치를 표시하는 함수 (기본 마커 이미지 사용)
-    function displayMarker(locPosition: any, message: string) {
-      const marker = new kakao.maps.Marker({
+    const displayMarker = (locPosition: any) => {
+      new kakao.maps.Marker({
         map: map,
         position: locPosition,
       });
-      const infowindow = new kakao.maps.InfoWindow({
-        content: message,
-      });
-      infowindow.open(map, marker);
       map.setCenter(locPosition);
-    }
+    };
 
-    // 브라우저의 geolocation을 사용하여 현재 위치 표시
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         const locPosition = new kakao.maps.LatLng(lat, lon);
-        const message = '<div style="padding:5px; width:100%; text-align:center;">현재 위치입니다!</div>';
-        displayMarker(locPosition, message);
+        displayMarker(locPosition);
       });
     } else {
       const locPosition = new kakao.maps.LatLng(33.450701, 126.570667);
-      const message = "geolocation을 사용할 수 없어요..";
-      displayMarker(locPosition, message);
+      displayMarker(locPosition);
     }
 
-    // PNG 파일을 사용한 커스텀 마커 이미지 생성
-    const customMarkerSize = new kakao.maps.Size(30, 30); // 원하는 크기로 조절
-    const customMarkerOptions = { offset: new kakao.maps.Point(20, 0) }; // 기준점 설정
-    const customMarkerImage = new kakao.maps.MarkerImage(customMarkerImageSrc, customMarkerSize, customMarkerOptions);
-
-    // 오버레이 데이터를 배열로 관리 (각 오버레이마다 content 생성 시 고유 id 할당)
-    const overlaysData = [
-      {
-        position: new kakao.maps.LatLng(37.478653, 126.619381),
-        content: (index: number) =>
-          ReactDOMServer.renderToString(
-            <OverlayContent
-              index={index}
-              title="차이나타운"
-              imageSrc={차이나타운}
-              mapLink="https://kko.kakao.com/3wolHfhd1a"
-            />
-          ),
-      },
-      {
-        position: new kakao.maps.LatLng(37.448224, 126.372506),
-        content: (index: number) =>
-          ReactDOMServer.renderToString(
-            <OverlayContent
-              index={index}
-              title="을왕리 해수욕장"
-              imageSrc={을왕리해수욕장}
-              mapLink="https://kko.kakao.com/QJZkpysT3P"
-            />
-          ),
-      },
-      {
-        position: new kakao.maps.LatLng(37.392414, 126.639544),
-        content: (index: number) =>
-          ReactDOMServer.renderToString(
-            <OverlayContent
-              index={index}
-              title="송도 센트럴파크"
-              imageSrc={송도센트럴파크}
-              mapLink="https://kko.kakao.com/ouvopIyXr1"
-            />
-          ),
-      },
-      {
-        position: new kakao.maps.LatLng(37.474674, 126.621407),
-        content: (index: number) =>
-          ReactDOMServer.renderToString(
-            <OverlayContent index={index} title="개항장" imageSrc={개항장} mapLink="https://kko.kakao.com/Jagjh9pVeU" />
-          ),
-      },
-      {
-        position: new kakao.maps.LatLng(37.554784, 126.714914),
-        content: (index: number) =>
-          ReactDOMServer.renderToString(
-            <OverlayContent index={index} title="계양산" imageSrc={계양산} mapLink="https://kko.kakao.com/ddEYd69M4e" />
-          ),
-      },
-      {
-        position: new kakao.maps.LatLng(37.472457, 126.600621),
-        content: (index: number) =>
-          ReactDOMServer.renderToString(
-            <OverlayContent index={index} title="월미도" imageSrc={월미도} mapLink="https://kko.kakao.com/2dXwr6CIKR" />
-          ),
-      },
-      // 추가 오버레이 데이터를 원하는 만큼 추가 가능
-    ];
-
-    overlaysData.forEach((data, index) => {
-      // 각 오버레이의 위치에 마커 생성 (PNG 파일을 사용한 커스텀 마커 이미지 적용)
-      const marker = new kakao.maps.Marker({
-        map: map,
-        position: data.position,
-        image: customMarkerImage,
-      });
-
-      const overlay = new kakao.maps.CustomOverlay({
-        content: data.content(index),
-        map: null, // 초기에는 오버레이를 표시하지 않음
-        position: data.position,
-      });
-
-      // 마커 클릭 시 해당 오버레이를 표시하고, 닫기 버튼 이벤트를 등록
-      kakao.maps.event.addListener(marker, "click", function () {
-        // 다른 오버레이 모두 닫기
-        overlaysRef.current.forEach((ov) => ov.setMap(null));
-        overlay.setMap(map);
-
-        // 오버레이의 DOM이 렌더링된 후 닫기 버튼에 직접 이벤트 리스너 등록
-        setTimeout(() => {
-          const closeBtn = document.getElementById(`closeBtn_${index}`);
-          if (closeBtn) {
-            const closeOverlay = () => overlay.setMap(null);
-            // 데스크탑과 모바일에서 모두 작동하도록 click과 touchend 이벤트 등록
-            closeBtn.addEventListener("click", closeOverlay);
-            closeBtn.addEventListener("touchend", closeOverlay);
-          }
-        }, 0);
-      });
-
-      overlaysRef.current.push(overlay);
-    });
-
-    // 모바일 터치 드래그 이벤트를 수동으로 처리하여 지도 이동 지원
     if ("ontouchstart" in window) {
       let startX: number | null = null;
       let startY: number | null = null;
@@ -306,11 +473,9 @@ const Map: React.FC = () => {
         const touch = e.touches[0];
         const deltaX = startX - touch.clientX;
         const deltaY = startY - touch.clientY;
-        // 지도 이동: panBy 메서드는 x, y (픽셀 단위)만큼 이동
         map.panBy(deltaX, deltaY);
         startX = touch.clientX;
         startY = touch.clientY;
-        // 기본 스크롤 동작 방지
         e.preventDefault();
       };
 
@@ -323,7 +488,6 @@ const Map: React.FC = () => {
       container?.addEventListener("touchmove", handleTouchMove);
       container?.addEventListener("touchend", handleTouchEnd);
 
-      // 컴포넌트 언마운트 시 이벤트 제거
       return () => {
         container?.removeEventListener("touchstart", handleTouchStart);
         container?.removeEventListener("touchmove", handleTouchMove);
@@ -332,12 +496,133 @@ const Map: React.FC = () => {
     }
   }, []);
 
+  /** 오른쪽 하단 현재 위치 이동 버튼 **/
+  const goToCurrentPosition = () => {
+    if (!mapInstanceRef.current) return;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const locPosition = new kakao.maps.LatLng(lat, lon);
+        mapInstanceRef.current.setCenter(locPosition);
+      });
+    } else {
+      alert("이 브라우저에서는 현재 위치를 가져올 수 없습니다.");
+    }
+  };
+
   return (
     <>
-      <div>
-        <div id="map" ref={mapContainerRef} style={{ width: "100%", height: "100vh" }}></div>
+      <div style={{ position: "relative" }}>
+        {/* 지도 컨테이너 */}
+        <div id="map" ref={mapContainerRef} style={{ width: "100%", height: "100vh" }} />
+        {/* 화면 중앙 상단의 검색바 */}
+        <SearchBarContainer>
+          <SearchInputWrapper>
+            <SearchInput
+              placeholder="🔍 행사, 관광지 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  // 엔터 키: 전체 검색 결과로 마커 표시 (기능1)
+                  handleSearchMarkers();
+                }
+              }}
+            />
+            {searchQuery && (
+              <ClearButton onClick={() => setSearchQuery("")}>
+                <FiX size={18} />
+              </ClearButton>
+            )}
+          </SearchInputWrapper>
+        </SearchBarContainer>
+        {/* 드롭다운 목록 (기능2) */}
+        {searchResults.length > 0 && (
+          <DropdownContainer>
+            {searchResults.map((site) => (
+              <DropdownItem key={site.id} onClick={() => handleSelectResult(site)}>
+                {site.title}
+              </DropdownItem>
+            ))}
+          </DropdownContainer>
+        )}
+        {/* 오른쪽 하단 현재 위치 이동 버튼 */}
+        <CurrentLocationButton onClick={goToCurrentPosition}>
+          <CiLocationArrow1 size={24} />
+        </CurrentLocationButton>
+        {/* 중앙 하단 "현재 위치에서 검색" 버튼 */}
+        <SearchFromCurrentLocationButton
+          onClick={async () => {
+            if (!mapInstanceRef.current) return;
+            const bounds = mapInstanceRef.current.getBounds();
+            const sw = bounds.getSouthWest();
+            const ne = bounds.getNorthEast();
+            const apiUrl = `/api/v1/sights/map?minLat=${sw.getLat()}&maxLat=${ne.getLat()}&minLng=${sw.getLng()}&maxLng=${ne.getLng()}`;
+            try {
+              const response = await fetch(apiUrl);
+              if (!response.ok) throw new Error("API 요청 실패");
+              const sightsData = await response.json();
+              apiMarkersRef.current.forEach((marker) => marker.setMap(null));
+              apiMarkersRef.current = [];
+              const customMarkerSize = new kakao.maps.Size(30, 30);
+              const customMarkerOptions = { offset: new kakao.maps.Point(20, 0) };
+              const customMarkerImage = new kakao.maps.MarkerImage(
+                customMarkerImageSrc,
+                customMarkerSize,
+                customMarkerOptions
+              );
+              sightsData.forEach((site: any, idx: number) => {
+                const position = new kakao.maps.LatLng(site.mapy, site.mapx);
+                const marker = new kakao.maps.Marker({
+                  map: mapInstanceRef.current,
+                  position: position,
+                  image: customMarkerImage,
+                });
+                kakao.maps.event.addListener(marker, "click", function () {
+                  if (currentOverlayRef.current) {
+                    currentOverlayRef.current.setMap(null);
+                  }
+                  const overlayContent = ReactDOMServer.renderToString(
+                    <OverlayContent
+                      index={idx}
+                      title={site.title}
+                      imageSrc={site.firstimage || ""}
+                      mapLink={`http://localhost:8001/sight/${site.id}`}
+                    />
+                  );
+                  const overlay = new kakao.maps.CustomOverlay({
+                    content: overlayContent,
+                    map: mapInstanceRef.current,
+                    position: position,
+                  });
+                  currentOverlayRef.current = overlay;
+                  setTimeout(() => {
+                    const closeBtn = document.getElementById(`closeBtn_${idx}`);
+                    if (closeBtn) {
+                      const closeOverlay = () => {
+                        overlay.setMap(null);
+                        currentOverlayRef.current = null;
+                      };
+                      closeBtn.addEventListener("click", closeOverlay);
+                      closeBtn.addEventListener("touchend", closeOverlay);
+                    }
+                  }, 0);
+                });
+                apiMarkersRef.current.push(marker);
+              });
+            } catch (error) {
+              console.error("관광지 데이터를 가져오는 중 에러 발생:", error);
+            }
+          }}
+        >
+          <FiRefreshCw size={18} style={{ marginRight: "8px" }} />
+          현재 위치에서 검색
+        </SearchFromCurrentLocationButton>
       </div>
-      <BottomNavbar />
+      <FixedNavbarWrapper>
+        <BottomNavbar paddingBottom={false} />
+      </FixedNavbarWrapper>
     </>
   );
 };
