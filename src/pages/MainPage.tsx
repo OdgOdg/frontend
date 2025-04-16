@@ -3,12 +3,59 @@ import { FaHeart } from "react-icons/fa";
 import { MdArticle } from "react-icons/md";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import eventImage from "../images/mainPage/event.png";
-import sightsImage from "../images/mainPage/sights.png";
+// import sightsImage from "../images/mainPage/sights.png";
 import BottomNavbar from "../components/BottomNavbar";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import axios from "axios";
+
 import SearchWithSuggestions from "./SearchWithSuggestions";
 
 const MainPage: React.FC = () => {
+  type Sight = {
+    id: number;
+    title: string;
+    addr1: string;
+    addr2: string | null;
+    dist: number;
+    firstimage: string | null;
+    firstimage2: string | null;
+    mapx: number;
+    mapy: number;
+    tel: string | null;
+  };
+  const randomCursor = useMemo(() => Math.floor(Math.random() * 100), []);
+  const [cursor, setCursor] = useState<number>(randomCursor);
+
+  type SightResponse = {
+    data: Sight[];
+    hasNext: boolean;
+  };
+  const [sights, setSights] = useState<Sight[]>([]);
+  // const [cursor, setCursor] = useState<number>(1);
+  const [hasNext, setHasNext] = useState<boolean>(true);
+  const fetchSights = async () => {
+    try {
+      const res = await axios.get<SightResponse>(`/api/v1/sights/pagination?cursor=${cursor}&limit=3`);
+
+      setSights((prev) => {
+        const newData = res.data.data.filter((newSight) => !prev.some((s) => s.id === newSight.id));
+        return [...prev, ...newData];
+      });
+
+      setHasNext(res.data.hasNext);
+
+      if (res.data.data.length > 0) {
+        const lastId = res.data.data[res.data.data.length - 1].id;
+        setCursor(lastId);
+      }
+    } catch (err) {
+      console.error("관광지 불러오기 실패", err);
+    }
+  };
+  useEffect(() => {
+    fetchSights();
+  }, []);
+
   const [banners, setBanners] = useState([
     {
       image: eventImage,
@@ -58,7 +105,7 @@ const MainPage: React.FC = () => {
             <FaChevronLeft />
           </ArrowLeft>
           <BannerWrapper ref={bannerRef}>
-            {banners.map((banner, index) => (
+            {banners.slice(0, 3).map((banner, index) => (
               <BannerItem key={index}>
                 <FavoriteIcon onClick={() => toggleFavorite(index)} $isFavorite={banner.isFavorite}>
                   <FaHeart />
@@ -74,6 +121,7 @@ const MainPage: React.FC = () => {
               </BannerItem>
             ))}
           </BannerWrapper>
+
           <ArrowRight onClick={scrollRight}>
             <FaChevronRight />
           </ArrowRight>
@@ -82,17 +130,18 @@ const MainPage: React.FC = () => {
       <Divider />
       <Section>
         <SectionHeader>
-          <Title>근처 관광지</Title>
+          <Title>인천 관광지</Title>
           <More>전체보기 &gt;</More>
         </SectionHeader>
         <TouristList>
-          {[1, 2, 3].map((item, index) => (
-            <TouristItem key={index}>
-              <TouristImage src={sightsImage} alt="솔찬공원" />
+          {sights.map((sight) => (
+            <TouristItem key={sight.id}>
+              <TouristImage src={sight.firstimage || "/fallback.png"} />
+
               <TouristInfo>
-                <h3>솔찬공원</h3>
-                <p>대부도와 무의도, 영종도까지 바라볼 수 있는 산책하기 좋은 공원</p>
-                <Address>인천 연수구 컨벤시아대로 391번길 20</Address>
+                <h3>{sight.title}</h3>
+                <p>{sight.tel || "전화번호 없음"}</p>
+                <Address>{sight.addr1}</Address>
                 <LikesLivewsContainer>
                   <Likes>
                     <FaHeart color="red" /> 12

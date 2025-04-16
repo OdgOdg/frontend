@@ -73,7 +73,7 @@ const TourSightListPage: React.FC = () => {
         {sights.map((sight) => (
           <EventCard key={sight.id}>
             <Image
-              src={sight.firstimage || "/fallback.jpg"}
+              src={sight.firstimage || "/fallback.png"}
               alt={sight.title}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "/fallback.png";
