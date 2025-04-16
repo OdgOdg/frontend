@@ -1,147 +1,92 @@
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
-import React from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 
-const events = [
-  {
-    title: "센트럴파크",
-    location: "내 위치에서 13.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
-  },
-  {
-    title: "월미도",
-    location: "내 위치에서 25.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
-  },
-  {
-    title: "차이나 타운",
-    location: "내 위치에서 22.4km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
-  },
-  {
-    title: "센트럴파크",
-    location: "내 위치에서 13.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
-  },
-  {
-    title: "월미도",
-    location: "내 위치에서 25.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
-  },
-  {
-    title: "차이나 타운",
-    location: "내 위치에서 22.4km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
-  },
-  {
-    title: "센트럴파크",
-    location: "내 위치에서 13.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
-  },
-  {
-    title: "월미도",
-    location: "내 위치에서 25.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
-  },
-  {
-    title: "차이나 타운",
-    location: "내 위치에서 22.4km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
-  },
-  {
-    title: "센트럴파크",
-    location: "내 위치에서 13.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
-  },
-  {
-    title: "월미도",
-    location: "내 위치에서 25.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
-  },
-  {
-    title: "차이나 타운",
-    location: "내 위치에서 22.4km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
-  },
-  {
-    title: "센트럴파크",
-    location: "내 위치에서 13.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
-  },
-  {
-    title: "월미도",
-    location: "내 위치에서 25.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
-  },
-  {
-    title: "차이나 타운",
-    location: "내 위치에서 22.4km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
-  },
-  {
-    title: "센트럴파크",
-    location: "내 위치에서 13.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image: "https://www.jonghapnews.com/news/photo/202408/434646_339900_4152.jpg",
-  },
-  {
-    title: "월미도",
-    location: "내 위치에서 25.7km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/jDYl3xK8uotCA3p3dD-EFufHlRJPWbYLExnhfIp5YlewDm3FO0lggA4q1xyIpWkoQl-P-NkHuSQ5ZYDzgW_6Sg.webp",
-  },
-  {
-    title: "차이나 타운",
-    location: "내 위치에서 22.4km",
-    date: "운영 중 | 23:00에 운영 종료",
-    image:
-      "https://i.namu.wiki/i/THNrcPT8iCfcGD1sWT8SnxJQySX5-5ayZVHL6EYqiOSlgDZ18ZUObKFB8RyIa8r2gq_rMPFsGbREM1ROzJdnXg.webp",
-  },
-  // 추가 이벤트를 여기에 추가
-];
+interface TourSight {
+  id: number;
+  title: string;
+  addr1: string;
+  addr2: string | null;
+  dist: number;
+  firstimage: string | null;
+  firstimage2: string | null;
+  mapx: number;
+  mapy: number;
+  tel: string | null;
+}
 
 const TourSightListPage: React.FC = () => {
+  const [sights, setSights] = useState<TourSight[]>([]);
+  const [cursor, setCursor] = useState<number | null>(1); // 시작 커서
+  const [hasNext, setHasNext] = useState(true);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchTourSights = useCallback(async () => {
+    if (!hasNext || cursor === null) return;
+
+    const res = await fetch(`api/v1/sights/pagination?cursor=${cursor}`);
+    if (!res.ok) {
+      console.error("API 호출 실패", res.status);
+      return;
+    }
+    const json = await res.json();
+    if (!Array.isArray(json.data)) {
+      console.error("json.data가 배열이 아님", json);
+      return;
+    }
+    setSights((prev) => {
+      const newIds = new Set(prev.map((item) => item.id));
+      const filtered = json.data.filter((item) => !newIds.has(item.id));
+      return [...prev, ...filtered];
+    });
+    setHasNext(json.hasNext);
+    const nextCursor = json.data[json.data.length - 1]?.id ?? null;
+    setCursor(nextCursor);
+  }, [cursor, hasNext]);
+
+  useEffect(() => {
+    fetchTourSights();
+  }, [fetchTourSights]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNext) {
+          fetchTourSights();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchTourSights, hasNext]);
+
   return (
     <div>
       <Header title="관광지 전체보기" />
       <Container>
-        {events.map((event, index) => (
-          <EventCard key={index}>
-            <Image src={event.image} alt={event.title} />
+        {sights.map((sight) => (
+          <EventCard key={sight.id}>
+            <Image
+              src={sight.firstimage || "/fallback.png"}
+              alt={sight.title}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/fallback.png";
+              }}
+            />
             <Info>
-              <Title>{event.title}</Title>
-              <Location>{event.location}</Location>
-              <Date>{event.date}</Date>
+              <Title>{sight.title}</Title>
+              <Location>{sight.addr1}</Location>
+              <Date>인천대학교에서 {(sight.dist / 1000).toFixed(1)}km</Date>
             </Info>
           </EventCard>
         ))}
+        <div ref={observerRef} style={{ height: "20px" }} />
       </Container>
       <BottomNavbar />
     </div>
@@ -170,7 +115,7 @@ const Container = styled.div`
 `;
 
 const EventCard = styled.div`
-  flex: 0 1 calc(33.33% - 16px); /* 한 줄에 3개 카드 (16px은 gap) */
+  flex: 0 1 calc(50% - 16px); // 한 줄에 2개 카드
   display: flex;
   flex-direction: column;
   background: white;
