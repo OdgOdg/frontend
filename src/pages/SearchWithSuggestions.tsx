@@ -88,6 +88,7 @@ const SearchInput = styled.input`
 `;
 
 const Dropdown = styled.ul`
+  width: 105%;
   position: absolute;
   top: 100%;
   left: 0;
@@ -95,6 +96,8 @@ const Dropdown = styled.ul`
   z-index: 10;
   background: white;
   border: 1px solid #ccc;
+  border-radius: 8px;
+
   border-top: none;
   max-height: 200px;
   overflow-y: auto;
