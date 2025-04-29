@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import ToggleMenu from "./EventToggle";
 import { CiCirclePlus } from "react-icons/ci";
@@ -10,7 +9,32 @@ import { useNavigate } from "react-router-dom";
 import EventModal from "./EventModal";
 import axios from "axios";
 
-// Styled-components
+interface CalendarEvent {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  memo: string;
+  isOrigin: boolean;
+  isAllday: boolean;
+  isFestival?: boolean;
+  addr1?: string;
+}
+
+interface Festival {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  category: number;
+  addr1: string;
+}
+
+interface CalendarProps {
+  year: number;
+  month: number;
+}
+
 const CalendarContentWrapper = styled.div`
   position: relative;
 `;
@@ -46,7 +70,6 @@ const WeekdaysRow = styled.div`
   border-bottom: 1px solid #e9e9e9;
 `;
 
-// transient prop: $isSunday
 const WeekdayCell = styled.div<{ $isSunday?: boolean }>`
   color: ${({ $isSunday }) => ($isSunday ? "#EF0707" : "inherit")};
 `;
@@ -55,12 +78,8 @@ const CalendarGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: right;
-  padding: 0;
-  row-gap: 0;
-  column-gap: 0;
 `;
 
-// transient props: $isCurrentMonth, $isToday, $isSelected
 const DayCell = styled.div<{
   $isCurrentMonth?: boolean;
   $isToday?: boolean;
@@ -76,38 +95,37 @@ const DayCell = styled.div<{
   cursor: pointer;
 `;
 
-const EventWrapper = styled.div`
+const EventSummary = styled.div`
   position: absolute;
-  left: 0;
-  right: 0;
   bottom: 0.5rem;
+  width: 80%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
-// transient prop: $isOriginal
-const EventTag = styled.div<{ $isOriginal?: boolean }>`
-  background-color: ${({ $isOriginal }) => ($isOriginal ? "#00AA5B" : "#4771EC")};
-  color: #fff;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.4rem;
-  margin-top: 0.3rem;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const DotWrapper = styled.div`
+  display: flex;
+  gap: 0.25rem;
 `;
 
-const MoreTag = styled.div`
-  background-color: #bbb;
-  color: #fff;
+const Dot = styled.span<{ color: string }>`
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: ${({ color }) => color};
+  border-radius: 50%;
+`;
+
+const CountText = styled.span`
   font-size: 0.7rem;
-  padding: 0.2rem 0.4rem;
-  margin-top: 0.3rem;
-  text-align: center;
+  color: #333;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const ToggleMenusWrapper = styled.div`
@@ -134,9 +152,7 @@ const FloatingButton = styled.button`
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 999;
-  &:hover {
-    opacity: 0.9;
-  }
+  &:hover { opacity: 0.9; }
 `;
 
 const NavigationContainer = styled.div`
@@ -153,197 +169,140 @@ const NavButton = styled.button`
   padding: 0.25rem;
 `;
 
-// 이벤트 데이터 타입
-
-interface CalendarEvent {
-  id: number;
-  title: string;
-  startDate: string;
-  endDate: string;
-  memo: string;
-  isOrigin: boolean;
-  isAllday: boolean;
-}
-
-interface CalendarProps {
-  year: number;
-  month: number;
-}
-
 const Calendar: React.FC<CalendarProps> = ({ year, month }) => {
   const navigate = useNavigate();
-
-  // API에서 가져온 이벤트 상태
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [festivals, setFestivals] = useState<Festival[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date(year, month - 1, 1));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalEvent, setModalEvent] = useState<CalendarEvent | null>(null);
 
   useEffect(() => {
-    axios
-      .get("/api/v1/events")
-      .then((response) => {
-        setEvents(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
+    axios.get("/api/v1/events")
+      .then(res => setEvents(res.data))
+      .catch(err => console.error(err));
+    axios.get("/api/v1/sights/pagination", { params: { limit: 200, category: 2 } })
+      .then(res => setFestivals(res.data.data))
+      .catch(err => console.error(err));
   }, []);
 
-  // 날짜 비교 시 KST로 변환하여 비교 (UTC 문자열을 KST로 변환)
-  const getEventsByDate = (date: Date) => {
-    const formattedDate = formatInTimeZone(date, "Asia/Seoul", "yyyy-MM-dd");
-    return events.filter((ev) => {
-      const eventStart = formatInTimeZone(new Date(ev.startDate), "Asia/Seoul", "yyyy-MM-dd");
-      const eventEnd = formatInTimeZone(new Date(ev.endDate), "Asia/Seoul", "yyyy-MM-dd");
-      return formattedDate >= eventStart && formattedDate <= eventEnd;
+  const getItemsByDate = (date: Date) => {
+    const kst = formatInTimeZone(date, "Asia/Seoul", "yyyy-MM-dd");
+    const evs = events.filter(ev => {
+      const s = formatInTimeZone(new Date(ev.startDate), "Asia/Seoul", "yyyy-MM-dd");
+      const e = formatInTimeZone(new Date(ev.endDate),   "Asia/Seoul", "yyyy-MM-dd");
+      return kst >= s && kst <= e;
     });
+    const fests = festivals.filter(f => {
+      const s = f.startDate.replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
+      const e = f.endDate  .replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
+      return kst >= s && kst <= e;
+    }).map(f => ({
+      id: f.id,
+      title: f.title,
+      startDate: f.startDate,
+      endDate: f.endDate,
+      memo: "",
+      isOrigin: false,
+      isAllday: true,
+      isFestival: true,
+      addr1: f.addr1,
+    } as CalendarEvent));
+    return [...evs, ...fests];
   };
 
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-
-  const firstDayOfMonth = new Date(currentYear, currentMonth - 1, 1);
-  const lastDayOfMonth = new Date(currentYear, currentMonth, 0);
-  const startWeekday = firstDayOfMonth.getDay();
-  const totalDays = lastDayOfMonth.getDate();
-
-  const daysArray: Date[] = [];
-  for (let i = 0; i < startWeekday; i++) {
-    daysArray.push(new Date(currentYear, currentMonth - 1, 1 - (startWeekday - i)));
-  }
-  for (let i = 1; i <= totalDays; i++) {
-    daysArray.push(new Date(currentYear, currentMonth - 1, i));
-  }
-  const leftoverDays = 7 - (daysArray.length % 7);
-  if (leftoverDays < 7) {
-    for (let i = 1; i <= leftoverDays; i++) {
-      daysArray.push(new Date(currentYear, currentMonth, i));
-    }
-  }
+  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const lastDay  = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const startWeekday = firstDay.getDay();
+  const totalDays     = lastDay.getDate();
+  const days: Date[]  = [];
+  for (let i = 0; i < startWeekday; i++) days.push(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1 - (startWeekday - i)));
+  for (let i = 1; i <= totalDays; i++) days.push(new Date(currentDate.getFullYear(), currentDate.getMonth(), i));
+  const leftover = 7 - (days.length % 7);
+  if (leftover < 7) for (let i = 1; i <= leftover; i++) days.push(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, i));
 
   const today = new Date();
-  const checkIsToday = (date: Date) => {
-    return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    );
-  };
-
-  const handleDayClick = (day: Date) => {
-    if (selectedDate && selectedDate.getTime() === day.getTime()) {
-      setSelectedDate(null);
-    } else {
-      setSelectedDate(day);
-    }
-  };
-
-  const selectedEvents = selectedDate ? getEventsByDate(selectedDate) : [];
-  const handleAddEvent = () => {
-    navigate("/addschedule");
-  };
+  const checkIsToday = (d: Date) =>
+    d.getFullYear() === today.getFullYear() &&
+    d.getMonth() === today.getMonth() &&
+    d.getDate() === today.getDate();
 
   const handlers = useSwipeable({
-    onSwipedRight: () => {
-      setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1));
-    },
-    onSwipedLeft: () => {
-      setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1));
-    },
+    onSwipedRight: () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)),
+    onSwipedLeft:  () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)),
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
   });
-
-  const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  // 하루에 표시할 총 태그 수 (이벤트 태그 + more 태그 포함)
-  const MAX_DISPLAYED = 2;
 
   return (
     <Container>
       <CalendarContentWrapper>
         <CalendarHeader>
-          <MonthYearText>{`${monthLabels[currentMonth - 1]} ${currentYear}`}</MonthYearText>
+          <MonthYearText>{`${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][currentDate.getMonth()]} ${currentDate.getFullYear()}`}</MonthYearText>
           <NavigationContainer>
-            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() - 1, 1))}>
-              {"<"}
-            </NavButton>
-            <NavButton onClick={() => setCurrentDate(new Date(currentYear, currentDate.getMonth() + 1, 1))}>
-              {">"}
-            </NavButton>
+            <NavButton onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}>&lt;</NavButton>
+            <NavButton onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}>&gt;</NavButton>
           </NavigationContainer>
         </CalendarHeader>
-
-        <WeekdaysRow>
-          {weekdayLabels.map((label) => (
-            <WeekdayCell key={label} $isSunday={label === "Sun"}>
-              {label}
-            </WeekdayCell>
-          ))}
-        </WeekdaysRow>
-
+        <WeekdaysRow>{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(label => <WeekdayCell key={label} $isSunday={label === "Sun"}>{label}</WeekdayCell>)}</WeekdaysRow>
         <div {...handlers}>
           <CalendarGrid>
-            {daysArray.map((day, idx) => {
-              const isCurrentMonth = day.getMonth() === currentMonth - 1;
-              const isToday = checkIsToday(day);
-              const isSelected = selectedDate && selectedDate.getTime() === day.getTime();
-              const dailyEvents = getEventsByDate(day);
-              let eventsToShow = dailyEvents;
-              if (dailyEvents.length > MAX_DISPLAYED) {
-                eventsToShow = dailyEvents.slice(0, MAX_DISPLAYED - 1);
-              }
+            {days.map((day, idx) => {
+              const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+              const isToday        = checkIsToday(day);
+              const isSelected     = selectedDate?.getTime() === day.getTime();
+              const items          = getItemsByDate(day);
+              const hasEvents      = items.some(ev => !ev.isFestival);
+              const hasFestivals   = items.some(ev => ev.isFestival);
+
               return (
                 <DayCell
                   key={idx}
                   $isCurrentMonth={isCurrentMonth}
                   $isToday={isToday}
                   $isSelected={!!isSelected}
-                  onClick={() => handleDayClick(day)}
+                  onClick={() => setSelectedDate(isSelected ? null : day)}
                 >
                   {day.getDate()}
-                  {dailyEvents.length > 0 && (
-                    <EventWrapper>
-                      {eventsToShow.map((ev) => (
-                        <EventTag key={ev.id} $isOriginal={ev.memo === "메모"}>
-                          {ev.title}
-                        </EventTag>
-                      ))}
-                      {dailyEvents.length > MAX_DISPLAYED && (
-                        <MoreTag>+{dailyEvents.length - (MAX_DISPLAYED - 1)} more</MoreTag>
-                      )}
-                    </EventWrapper>
+                  {items.length > 0 && (
+                    <EventSummary>
+                      <DotWrapper>
+                        {hasEvents    && <Dot color="#4771EC" />}
+                        {hasFestivals && <Dot color="#00AA5B" />}
+                      </DotWrapper>
+                      <CountText>{items.length}개 일정</CountText>
+                    </EventSummary>
                   )}
                 </DayCell>
               );
             })}
           </CalendarGrid>
         </div>
-
-        <FloatingButton onClick={handleAddEvent}>
-          <CiCirclePlus size={30} />
-        </FloatingButton>
+        <FloatingButton onClick={() => navigate("/addschedule")}> <CiCirclePlus size={30}/> </FloatingButton>
       </CalendarContentWrapper>
 
-      {selectedEvents.length > 0 && selectedDate && (
+      {selectedDate && (
         <ToggleMenusWrapper>
-          {selectedEvents.map((ev) => (
-            <ToggleMenu
-              key={ev.id}
-              leftLabel={ev.isAllday ? "종일" : formatInTimeZone(new Date(ev.startDate), "Asia/Seoul", "HH:mm")}
-              rightLabel={ev.title}
-              onClickArrow={() => setModalEvent(ev)}
-              isOriginal={ev.memo === "메모"}
-            />
+          {getItemsByDate(selectedDate).map(ev => (
+            <div key={ev.id} style={{ display: 'inline-block' }} onClick={() => setModalEvent(ev)}>
+              <ToggleMenu
+                leftLabel={
+                  ev.isAllday
+                    ? (ev.isFestival ? "축제" : "종일")
+                    : formatInTimeZone(new Date(ev.startDate), "Asia/Seoul", "HH:mm")
+                }
+                rightLabel={ev.title}
+                onClickArrow={() => setModalEvent(ev)}
+                isOriginal={ev.isFestival}
+              />
+            </div>
           ))}
         </ToggleMenusWrapper>
       )}
-
       <BottomNavbar />
-
-      {modalEvent && <EventModal event={modalEvent} selectedDate={selectedDate} onClose={() => setModalEvent(null)} />}
+      {modalEvent && (
+        <EventModal event={modalEvent} selectedDate={selectedDate} onClose={() => setModalEvent(null)} />
+      )}
     </Container>
   );
 };

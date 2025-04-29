@@ -7,13 +7,13 @@ const ToggleContainer = styled.div`
   border: 1px solid #ddd;
   border-radius: 9999px;
   padding: 0.2rem 0.6rem;
-  margin-left : 0.5rem;
+  margin-left: 0.5rem;
   background-color: #fff;
 `;
 
 const LeftLabel = styled.span`
   font-size: 0.7rem;
-  font-weight : 600;
+  font-weight: 600;
   color: #333;
 `;
 
@@ -28,6 +28,10 @@ const Divider = styled.div<{ isOriginal?: boolean }>`
 const RightLabel = styled.span`
   font-size: 0.7rem;
   color: #333;
+  /* 고정 폭 및 줄바꿈 방지 */
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const Arrow = styled.span`
@@ -36,8 +40,6 @@ const Arrow = styled.span`
   margin-left: 0.5rem;
   cursor: pointer;
 `;
-
-/* ------------------------- Component & Types ------------------------- */
 
 interface EventToggleProps {
   leftLabel: string;
@@ -52,11 +54,15 @@ const EventToggle: React.FC<EventToggleProps> = ({
   onClickArrow,
   isOriginal,
 }) => {
+  // rightLabel이 15글자 초과 시 잘라서 ... 추가
+  const truncatedRight =
+    rightLabel.length > 15 ? `${rightLabel.slice(0, 8)}...` : rightLabel;
+
   return (
     <ToggleContainer>
       <LeftLabel>{leftLabel}</LeftLabel>
       <Divider isOriginal={isOriginal} />
-      <RightLabel>{rightLabel}</RightLabel>
+      <RightLabel title={rightLabel}>{truncatedRight}</RightLabel>
       <Arrow onClick={onClickArrow}>{'>'}</Arrow>
     </ToggleContainer>
   );
