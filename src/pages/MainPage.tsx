@@ -35,7 +35,7 @@ const MainPage: React.FC = () => {
   const [hasNext, setHasNext] = useState<boolean>(true);
   const fetchSights = async () => {
     try {
-      const res = await axios.get<SightResponse>(`/api/v1/sights/pagination?cursor=${cursor}&limit=3&categori=1`);
+      const res = await axios.get<SightResponse>(`/api/v1/sights/pagination?cursor=1&limit=3&category=1`);
 
       setSights((prev) => {
         const newData = res.data.data.filter((newSight) => !prev.some((s) => s.id === newSight.id));
