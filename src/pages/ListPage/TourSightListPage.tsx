@@ -1,7 +1,7 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import styled from "styled-components";
 
 interface TourSight {
   id: number;
@@ -18,53 +18,54 @@ interface TourSight {
 
 const TourSightListPage: React.FC = () => {
   const [sights, setSights] = useState<TourSight[]>([]);
-  const [cursor, setCursor] = useState<number | null>(1); // 시작 커서
+  const [cursor, setCursor] = useState<number | null>(1);
   const [hasNext, setHasNext] = useState(true);
   const observerRef = useRef<HTMLDivElement | null>(null);
 
   const fetchTourSights = useCallback(async () => {
     if (!hasNext || cursor === null) return;
 
-    const res = await fetch(`api/v1/sights/pagination?cursor=${cursor}`);
-    if (!res.ok) {
-      console.error("API 호출 실패", res.status);
-      return;
-    }
-    const json = await res.json();
-    if (!Array.isArray(json.data)) {
-      console.error("json.data가 배열이 아님", json);
-      return;
-    }
-    setSights((prev) => {
-      const newIds = new Set(prev.map((item) => item.id));
-      const filtered = json.data.filter((item) => !newIds.has(item.id));
-      return [...prev, ...filtered];
-    });
-    setHasNext(json.hasNext);
-    const nextCursor = json.data[json.data.length - 1]?.id ?? null;
-    setCursor(nextCursor);
-  }, [cursor, hasNext]);
+    try {
+      const res = await fetch(`/api/v1/sights/pagination?cursor=${cursor}&limit=6&category=1`);
+      if (!res.ok) throw new Error("API 호출 실패");
 
+      const json = await res.json();
+
+      if (!Array.isArray(json.data)) throw new Error("json.data가 배열이 아님");
+
+      const prevIds = new Set(sights.map((item) => item.id));
+      const newSights = json.data.filter((item) => !prevIds.has(item.id));
+
+      setSights((prev) => [...prev, ...newSights]);
+      setHasNext(json.hasNext);
+      const nextCursor = json.data[json.data.length - 1]?.id ?? null;
+      setCursor(nextCursor);
+    } catch (error) {
+      console.error("fetchTourSights 오류:", error);
+    }
+  }, [cursor, hasNext, sights]);
+
+  // 최초 로딩
   useEffect(() => {
     fetchTourSights();
-  }, [fetchTourSights]);
+  }, []);
 
+  // Intersection Observer
   useEffect(() => {
+    if (!observerRef.current) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasNext) {
+        if (entries[0].isIntersecting) {
           fetchTourSights();
         }
       },
-      { threshold: 1 }
+      { threshold: 1.0 }
     );
 
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
-
+    observer.observe(observerRef.current);
     return () => observer.disconnect();
-  }, [fetchTourSights, hasNext]);
+  }, [fetchTourSights]);
 
   return (
     <div>
@@ -86,7 +87,7 @@ const TourSightListPage: React.FC = () => {
             </Info>
           </EventCard>
         ))}
-        <div ref={observerRef} style={{ height: "20px" }} />
+        <ObserverTarget ref={observerRef} />
       </Container>
       <BottomNavbar />
     </div>
@@ -95,27 +96,25 @@ const TourSightListPage: React.FC = () => {
 
 export default TourSightListPage;
 
+// 스타일
+
 const Container = styled.div`
   display: flex;
-  flex-wrap: wrap; /* 카드가 넘치면 다음 줄로 이동 */
-  gap: 16px; /* 카드 간격 */
+  flex-wrap: wrap;
+  gap: 16px;
   padding: 20px;
-  /* max-height: 100vh; */
-  overflow-y: auto; /* 수직 스크롤 활성화 */
   background-color: #f9f9f9;
-  padding-right: 0;
+  overflow-y: auto;
 
-  /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
-    display: none; /* 웹킷 브라우저에서 스크롤바 숨김 */
+    display: none;
   }
-
-  scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
-  -ms-overflow-style: none; /* Internet Explorer 및 Edge에서 스크롤바 숨김 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const EventCard = styled.div`
-  flex: 0 1 calc(50% - 16px); // 한 줄에 2개 카드
+  flex: 0 1 calc(50% - 16px);
   display: flex;
   flex-direction: column;
   background: white;
@@ -154,4 +153,9 @@ const Location = styled.p`
 const Date = styled.p`
   font-size: 14px;
   color: #888;
+`;
+
+const ObserverTarget = styled.div`
+  height: 20px;
+  width: 100%;
 `;

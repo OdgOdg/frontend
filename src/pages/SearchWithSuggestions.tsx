@@ -75,9 +75,11 @@ const SearchWithSuggestions: React.FC = () => {
 };
 
 export default SearchWithSuggestions;
+
 const SearchContainer = styled.div`
   position: relative;
   width: 70%;
+  box-sizing: border-box;
 `;
 
 const SearchInput = styled.input`
@@ -85,6 +87,7 @@ const SearchInput = styled.input`
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 `;
 
 const Dropdown = styled.ul`
@@ -92,7 +95,7 @@ const Dropdown = styled.ul`
   position: absolute;
   top: 100%;
   left: 0;
-  right: 0;
+  width: 100%; // 추가
   z-index: 10;
   background: white;
   border: 1px solid #ccc;
@@ -104,6 +107,8 @@ const Dropdown = styled.ul`
   list-style: none;
   margin: 0;
   padding: 0;
+  box-sizing: border-box; // 추가
+  border-radius: 10px;
 `;
 
 const DropdownItem = styled.li`
