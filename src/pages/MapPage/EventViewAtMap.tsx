@@ -1,75 +1,61 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { FaHeart, FaRegClock, FaPhoneAlt, FaPen, FaCaretDown, FaChevronRight, FaCopy } from "react-icons/fa";
+import { FaHeart, FaPen, FaChevronRight, FaCopy } from "react-icons/fa";
 import { FiBookOpen } from "react-icons/fi";
 import { GrMapLocation } from "react-icons/gr";
 import { FaBookmark } from "react-icons/fa6";
 import { BiDirections } from "react-icons/bi";
+import { FaRegShareSquare } from "react-icons/fa";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
-import 송도센트럴파크1 from "../../images/MapPage/송도센트럴파크1.jpg";
-import 송도센트럴파크2 from "../../images/MapPage/송도센트럴파크2.jpg";
-import 송도센트럴파크3 from "../../images/MapPage/송도센트럴파크3.jpg";
-import 송도센트럴파크4 from "../../images/MapPage/송도센트럴파크4.jpg";
 
-/* styled-components */
-
+/* styled-components 정의 (생략) */
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 30px;
+  padding: 30px 30px 60px;
   box-sizing: border-box;
   background-color: #fff;
   color: #333;
 `;
-
 const MapHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 `;
-
 const TitleWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
 const MainTitle = styled.h1`
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   color: #00aa5b;
 `;
-
 const SubInfo = styled.div`
   margin-top: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 `;
-
 const Status = styled.div`
   font-size: 14px;
   color: #333;
 `;
-
 const Text = styled.span`
-  color: black;
+  font-size: 18px;
+  color: #666;
   font-weight: 600;
 `;
-
-const Distance = styled.div`
-  font-size: 13px;
-  color: #666;
-`;
-
 const IconWrapper = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
   margin-top: 1rem;
 `;
-
 const IconBox = styled.div`
   display: flex;
   align-items: center;
@@ -79,58 +65,20 @@ const IconBox = styled.div`
     margin-left: 8px;
   }
 `;
-
-const ImageArea = styled.div`
-  display: flex;
+const ImageWrapper = styled.div`
+  width: 100%;
   margin-top: 16px;
-  gap: 8px;
-  overflow-x: auto;
-  cursor: grab;
-  scroll-behavior: smooth;
 `;
-
 const ImageItem = styled.img`
-  width: 50%;
-  height: 20vh;
+  width: 100%;
+  height: auto;
   object-fit: cover;
 `;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-`;
-
-const ModalImage = styled.img`
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  background: transparent;
-  border: none;
-  font-size: 2rem;
-  color: #fff;
-  cursor: pointer;
-`;
-
 const ButtonRow = styled.div`
   display: flex;
   margin-top: 18px;
   gap: 8px;
 `;
-
 const Button = styled.button`
   flex: 0.33;
   display: flex;
@@ -151,7 +99,6 @@ const Button = styled.button`
     background-color: rgb(2, 145, 79);
   }
 `;
-
 const InfoList = styled.ul`
   list-style: none;
   padding: 0;
@@ -160,15 +107,15 @@ const InfoList = styled.ul`
   flex-direction: column;
   gap: 15px;
 `;
-
 const InfoItem = styled.li`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 2px solid grey;
+  padding-bottom : 5px;
   font-size: 16px;
   color: black;
 `;
-
 const LeftInfo = styled.div`
   display: flex;
   align-items: center;
@@ -179,150 +126,86 @@ const LeftInfo = styled.div`
   }
 `;
 
-const OperatingHourItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-  margin-top: 4px;
-  color: #555;
-`;
-
-/* ------------------------- Component & Types ------------------------- */
-
-interface SongdoCentralParkProps {}
-
-interface OperatingHoursDetailsProps {
-  expanded: boolean;
+interface LocationState {
+  id: number;
+  title: string;
+  addr1: string;
+  firstimage: string;
+  category: number;
 }
 
-interface HeartProps {
-  active: boolean;
-}
+const EventViewAtMap: React.FC = () => {
+  const navigate = useNavigate();
+  const { state } = useLocation<LocationState | null>();
+  const params = useParams<{ id: string }>();
 
-interface BookmarkProps {
-  active: boolean;
-}
+  const [site, setSite] = useState<LocationState | null>(state ?? null);
+  const [loading, setLoading] = useState(!state);
 
-const OperatingHoursDetails = styled.div<OperatingHoursDetailsProps>`
-  overflow: hidden;
-  max-height: ${({ expanded }) => (expanded ? "500px" : "0")};
-  opacity: ${({ expanded }) => (expanded ? 1 : 0)};
-  transform: translateY(${({ expanded }) => (expanded ? "0" : "-20px")});
-  transition:
-    max-height 0.3s ease,
-    opacity 0.3s ease,
-    transform 0.3s ease;
-`;
+  const [copied, setCopied] = useState(false);
 
-const operatingHours = [
-  { day: "월요일", hours: "휴무" },
-  { day: "화요일", hours: "24시간 영업" },
-  { day: "수요일", hours: "오전 06:00 ~ 오후 10:00" },
-  { day: "목요일", hours: "오전 08:00 ~ 오후 12:00" },
-  { day: "금요일", hours: "오전 06:00 ~ 오후 10:00" },
-  { day: "토요일", hours: "오전 08:00 ~ 오후 12:00" },
-  { day: "일요일", hours: "휴무" },
-];
-
-const TouchableHeart = styled(FaHeart)<HeartProps>`
-  color: ${({ active }) => (active ? "red" : "black")};
-  cursor: pointer;
-  transition: color 0.3s ease;
-`;
-
-const StyledBookmark = styled(FaBookmark)<BookmarkProps>`
-  color: ${({ active }) => (active ? "#05DC78" : "white")};
-  transition: color 0.3s ease;
-`;
-
-const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
-  const [heartActive, setHeartActive] = useState(false);
-  const toggleHeart = () => {
-    setHeartActive((prev) => !prev);
-  };
-
-  const [bookmarkActive, setBookmarkActive] = useState(false);
-  const toggleBookmark = () => {
-    setBookmarkActive((prev) => !prev);
-  };
-
-  const [isOperatingHoursExpanded, setIsOperatingHoursExpanded] = useState(false);
-  const toggleOperatingHours = () => {
-    setIsOperatingHoursExpanded((prev) => !prev);
-  };
-
-  const imageAreaRef = useRef<HTMLDivElement>(null);
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDown(true);
-    if (imageAreaRef.current) {
-      setStartX(e.pageX - imageAreaRef.current.offsetLeft);
-      setScrollLeft(imageAreaRef.current.scrollLeft);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setIsDown(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDown(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDown || !imageAreaRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - imageAreaRef.current.offsetLeft;
-    const walk = (x - startX) * 1;
-    imageAreaRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState<{ src: string; alt: string } | null>(null);
-
-  const handleImageClick = (src: string, alt: string) => {
-    setCurrentImage({ src, alt });
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setCurrentImage(null);
-  };
-
-  const handleCopyPhoneNumber = () => {
-    const phoneNumber = "032-831-9935";
+  const handleCopyAddress = () => {
     navigator.clipboard
-      .writeText(phoneNumber)
+      .writeText(site.addr1)
       .then(() => {
-        alert("전화번호가 복사되었습니다!");
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
       })
       .catch((err) => {
-        console.error("복사 실패:", err);
+        console.error("주소 복사 실패:", err);
       });
   };
 
+  const [copiedUrl, setCopiedUrl] = useState(false);
+
+  const handleCopyUrl = () => {
+    const url = window.location.href;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopiedUrl(true);
+        setTimeout(() => setCopiedUrl(false), 1500);
+      })
+      .catch((err) => console.error("URL 복사 실패:", err));
+  };
+
+  useEffect(() => {
+    if (!site && params.id) {
+      setLoading(true);
+      fetch(`/api/v1/sights/${params.id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("조회 실패");
+          return res.json();
+        })
+        .then((data: LocationState) => setSite(data))
+        .catch(() => navigate("/", { replace: true }))
+        .finally(() => setLoading(false));
+    }
+  }, [params.id, site, navigate]);
+
+  if (loading) return <div>로딩 중...</div>;
+  if (!site) return <div>잘못된 접근입니다.</div>;
+
+  // 렌더링 본문
   return (
     <>
       <Header title="" />
       <Container>
-        {/* 헤더 영역 */}
         <MapHeader>
           <TitleWrapper>
-            <MainTitle>송도 센트럴파크</MainTitle>
+            <MainTitle>{site.title}</MainTitle>
             <SubInfo>
               <Status>
-                <Text>운영중</Text> | 23:00에 운영 종료
+                <Text>{site.category === 2 ? "🎆 축제" : "🏞️ 관광지"}</Text>
               </Status>
-              <Distance>내 위치에서 13.7km</Distance>
             </SubInfo>
           </TitleWrapper>
           <IconWrapper>
             <IconBox>
-              <TouchableHeart active={heartActive} onClick={toggleHeart} />
+              <FaHeart
+                style={{ color: "black", cursor: "pointer" }}
+                onClick={() => setSite((site) => ({ ...site!, category: site!.category }))}
+              />
               <span>12</span>
             </IconBox>
             <IconBox>
@@ -331,52 +214,17 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
           </IconWrapper>
         </MapHeader>
 
-        {/* 이미지 영역 - 드래그 이벤트와 클릭 이벤트 추가 */}
-        <ImageArea
-          ref={imageAreaRef}
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-        >
-          <ImageItem
-            src={송도센트럴파크1}
-            alt="송도 센트럴파크 이미지1"
-            onClick={() => handleImageClick(송도센트럴파크1, "송도 센트럴파크 이미지1")}
-          />
-          <ImageItem
-            src={송도센트럴파크2}
-            alt="송도 센트럴파크 이미지2"
-            onClick={() => handleImageClick(송도센트럴파크2, "송도 센트럴파크 이미지2")}
-          />
-          <ImageItem
-            src={송도센트럴파크3}
-            alt="송도 센트럴파크 이미지3"
-            onClick={() => handleImageClick(송도센트럴파크3, "송도 센트럴파크 이미지3")}
-          />
-          <ImageItem
-            src={송도센트럴파크4}
-            alt="송도 센트럴파크 이미지4"
-            onClick={() => handleImageClick(송도센트럴파크4, "송도 센트럴파크 이미지4")}
-          />
-        </ImageArea>
+        <ImageWrapper>
+          <ImageItem src={site.firstimage} alt={site.title} />
+        </ImageWrapper>
 
-        {/* 모달 영역 */}
-        {modalOpen && currentImage && (
-          <ModalOverlay onClick={closeModal}>
-            <CloseButton onClick={closeModal}>&times;</CloseButton>
-            <ModalImage src={currentImage.src} alt={currentImage.alt} onClick={(e) => e.stopPropagation()} />
-          </ModalOverlay>
-        )}
-
-        {/* 버튼 영역 */}
         <ButtonRow>
-          <Button>
+          <Button onClick={() => window.open("https://kko.kakao.com/aY2KP6sKoN", "_blank")}>
             <BiDirections />
             길찾기
           </Button>
-          <Button onClick={toggleBookmark}>
-            <StyledBookmark active={bookmarkActive} />
+          <Button onClick={() => {}}>
+            <FaBookmark />
           </Button>
           <Button>
             <FaPen />
@@ -384,36 +232,14 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
           </Button>
         </ButtonRow>
 
-        {/* 상세 정보 영역 */}
         <InfoList>
-          <InfoItem onClick={toggleOperatingHours} style={{ cursor: "pointer" }}>
-            <LeftInfo>
-              <FaRegClock />
-              <span>매일 06:00 - 24:00</span>
-            </LeftInfo>
-            <FaCaretDown />
-          </InfoItem>
-          <OperatingHoursDetails expanded={isOperatingHoursExpanded}>
-            {operatingHours.map(({ day, hours }) => (
-              <OperatingHourItem key={day}>
-                <span>{day}</span>
-                <span>{hours}</span>
-              </OperatingHourItem>
-            ))}
-          </OperatingHoursDetails>
-          <InfoItem>
+          <InfoItem onClick={handleCopyAddress} style={{ cursor: "pointer" }} title="주소 복사">
             <LeftInfo>
               <GrMapLocation />
-              <span>인천 연수구 컨벤시아대로391번길 20</span>
+              <span>{site.addr1}</span>
+              {copied && <em style={{ marginLeft: 8, color: "#00aa5b", fontSize: 14 }}>복사됨!</em>}
             </LeftInfo>
-            <FaChevronRight />
-          </InfoItem>
-          <InfoItem>
-            <LeftInfo>
-              <FaPhoneAlt />
-              <span>032-831-9935</span>
-            </LeftInfo>
-            <FaCopy onClick={handleCopyPhoneNumber} style={{ cursor: "pointer" }} />
+            <FaCopy />
           </InfoItem>
           <InfoItem>
             <LeftInfo>
@@ -422,6 +248,14 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
             </LeftInfo>
             <FaChevronRight />
           </InfoItem>
+          <InfoItem onClick={handleCopyUrl} style={{ cursor: "pointer" }} title="URL 복사">
+            <LeftInfo>
+              <FaRegShareSquare />
+              <span>공유 하기</span>
+              {copiedUrl && <em style={{ marginLeft: 8, color: "#00aa5b", fontSize: 14 }}>URL 복사됨!</em>}
+            </LeftInfo>
+            <FaCopy />
+          </InfoItem>
         </InfoList>
       </Container>
       <BottomNavbar paddingBottom={false} />
@@ -429,4 +263,4 @@ const SongdoCentralPark: React.FC<SongdoCentralParkProps> = () => {
   );
 };
 
-export default SongdoCentralPark;
+export default EventViewAtMap;
