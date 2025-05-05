@@ -1,33 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import { FiUserPlus } from "react-icons/fi";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
 import searchCardImg from "../../images/chatPage/CardSearch.jpg";
-import profileImg from "../../images/chatPage/JihoonProfile.png"; // 김지훈 프로필 이미지 추가
+import profileImg from "../../images/chatPage/JihoonProfile.png";
+
+let debounceTimer: ReturnType<typeof setTimeout>;
 
 const AddFriendPage = () => {
-  const [email, setEmail] = useState(""); // 입력 값 상태 추가
-  const [isMatched, setIsMatched] = useState(false); // 일치 여부 상태
+  const [email, setEmail] = useState("");
+  const [friendData, setFriendData] = useState<{ id: number; name: string; email: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAddFriend = async (friendId: number) => {
+    try {
+      await axios.post("/api/v1/friends", { friendId });
+      alert("친구가 추가되었습니다!");
+    } catch (err) {
+      alert("친구 추가에 실패했습니다.");
+    }
+  };
 
   const handleChange = (value: string) => {
     setEmail(value);
-    if (value === "20201532@inu.ac.kr") {
-      setIsMatched(true);
-    } else {
-      setIsMatched(false);
-    }
+    setFriendData(null);
+    setError(null);
   };
+
+  useEffect(() => {
+    if (!email) return;
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+      try {
+        const response = await axios.get(`api/v1/friends/email?email=${email}`);
+        if (response.data && response.data.email) {
+          setFriendData(response.data);
+          setError(null);
+        } else {
+          setFriendData(null);
+          setError("사용자를 찾을 수 없습니다.");
+        }
+      } catch (err) {
+        setFriendData(null);
+        setError("사용자를 찾을 수 없습니다.");
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [email]);
 
   return (
     <>
       <Header title="친구 추가" />
       <EmailInput value={email} onChange={handleChange} />
-      {isMatched ? (
-        <Profile />
+      {friendData ? (
+        <Profile id={friendData.id} name={friendData.name} email={friendData.email} onAddFriend={handleAddFriend} />
       ) : (
         <ImageContainer>
           <Image src={searchCardImg} alt="searchCardImg" />
+          {error && <ErrorText>{error}</ErrorText>}
         </ImageContainer>
       )}
       <BottomNavbar />
@@ -35,6 +69,7 @@ const AddFriendPage = () => {
   );
 };
 
+// EmailInput 컴포넌트를 AddFriendPage 밖으로 이동
 const EmailInput: React.FC<{
   value: string;
   onChange: (value: string) => void;
@@ -42,19 +77,25 @@ const EmailInput: React.FC<{
   return (
     <InputWrapper>
       <StyledInput placeholder="이메일을 입력해 주세요" value={value} onChange={(e) => onChange(e.target.value)} />
-      <SearchButton>
+      <SearchButton disabled>
         <FiUserPlus size={24} />
       </SearchButton>
     </InputWrapper>
   );
 };
 
-const Profile = () => (
+// Profile 컴포넌트를 AddFriendPage 밖으로 이동
+const Profile: React.FC<{
+  id: number;
+  name: string;
+  email: string;
+  onAddFriend: (id: number) => void;
+}> = ({ id, name, email, onAddFriend }) => (
   <ProfileContainer>
-    <ProfileImage src={profileImg} alt="김지훈 프로필" />
-    <ProfileName>김지훈</ProfileName>
-    <ProfileEmail>20201532@inu.ac.kr</ProfileEmail>
-    <AddFriendButton>친구 추가</AddFriendButton>
+    <ProfileImage src={profileImg} alt={`${name} 프로필`} />
+    <ProfileName>{name}</ProfileName>
+    <ProfileEmail>{email}</ProfileEmail>
+    <AddFriendButton onClick={() => onAddFriend(id)}>친구 추가</AddFriendButton>
   </ProfileContainer>
 );
 
@@ -70,6 +111,12 @@ const Image = styled.img`
   width: 40%;
   height: auto;
   max-width: 500px;
+`;
+
+const ErrorText = styled.p`
+  margin-top: 20px;
+  color: red;
+  font-size: 14px;
 `;
 
 const InputWrapper = styled.div`
@@ -97,7 +144,7 @@ const StyledInput = styled.input`
 const SearchButton = styled.button`
   background: none;
   border: none;
-  cursor: pointer;
+  cursor: not-allowed;
   position: absolute;
   right: 12px;
   display: flex;
