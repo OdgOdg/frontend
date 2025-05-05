@@ -21,6 +21,7 @@ const TourSightListPage: React.FC = () => {
   const [cursor, setCursor] = useState<number | null>(1);
   const [hasNext, setHasNext] = useState(true);
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const loadedIdsRef = useRef<Set<number>>(new Set());
 
   const fetchTourSights = useCallback(async () => {
     if (!hasNext || cursor === null) return;
@@ -30,27 +31,24 @@ const TourSightListPage: React.FC = () => {
       if (!res.ok) throw new Error("API 호출 실패");
 
       const json = await res.json();
+      const newItems: TourSight[] = Array.isArray(json.data) ? json.data : [];
 
-      if (!Array.isArray(json.data)) throw new Error("json.data가 배열이 아님");
+      // 중복 제거
+      const filtered = newItems.filter((item) => !loadedIdsRef.current.has(item.id));
+      filtered.forEach((item) => loadedIdsRef.current.add(item.id));
 
-      const prevIds = new Set(sights.map((item) => item.id));
-      const newSights = json.data.filter((item) => !prevIds.has(item.id));
-
-      setSights((prev) => [...prev, ...newSights]);
+      setSights((prev) => [...prev, ...filtered]);
       setHasNext(json.hasNext);
-      const nextCursor = json.data[json.data.length - 1]?.id ?? null;
-      setCursor(nextCursor);
+      setCursor(newItems[newItems.length - 1]?.id ?? null);
     } catch (error) {
       console.error("fetchTourSights 오류:", error);
     }
-  }, [cursor, hasNext, sights]);
+  }, [cursor, hasNext]);
 
-  // 최초 로딩
   useEffect(() => {
     fetchTourSights();
   }, []);
 
-  // Intersection Observer
   useEffect(() => {
     if (!observerRef.current) return;
 
@@ -96,8 +94,7 @@ const TourSightListPage: React.FC = () => {
 
 export default TourSightListPage;
 
-// 스타일
-
+// 스타일 정의는 동일
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;

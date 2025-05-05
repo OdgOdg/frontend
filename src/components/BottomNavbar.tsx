@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { IconType } from "react-icons";
 import { AiOutlineHome, AiOutlineCalendar, AiOutlineWechat, AiOutlineUser } from "react-icons/ai";
 import { BiMap } from "react-icons/bi";
+import { Link, useLocation } from "react-router-dom";
 
 interface INavbarItem {
   id: number;
@@ -16,9 +17,9 @@ interface INavbarItem {
 const navbarItems: INavbarItem[] = [
   { id: 1, icon: AiOutlineHome, path: "/", label: "Home" },
   { id: 2, icon: AiOutlineCalendar, path: "/calendar", label: "Calendar" },
-  { id: 4, icon: AiOutlineWechat, path: "/chat", label: "Chat" },
+  { id: 4, icon: AiOutlineWechat, path: "/chatroomlist", label: "Chat" },
   { id: 5, icon: BiMap, path: "/map", label: "Map" },
-  { id: 6, icon: AiOutlineUser, path: "/profile", label: "Profile" },
+  { id: 6, icon: AiOutlineUser, path: "/myprofile", label: "Profile" },
 ];
 
 interface BottomNavbarProps {
@@ -26,6 +27,8 @@ interface BottomNavbarProps {
 }
 
 const BottomNavbar: React.FC<BottomNavbarProps> = ({ paddingBottom = true }) => {
+  const location = useLocation(); // 컴포넌트 상단에 추가
+
   const [activeId, setActiveId] = useState(1);
 
   const handleClick = (id: number) => {
@@ -46,12 +49,12 @@ const BottomNavbar: React.FC<BottomNavbarProps> = ({ paddingBottom = true }) => 
   return (
     <Navbar>
       {navbarItems.map((item) => (
-        <NavbarItem key={item.id} className={activeId === item.id ? "active" : ""} onClick={() => handleClick(item.id)}>
+        <NavbarLink key={item.id} to={item.path} className={location.pathname === item.path ? "active" : ""}>
           <Icon>
             <item.icon />
           </Icon>
           <Label>{item.label}</Label>
-        </NavbarItem>
+        </NavbarLink>
       ))}
     </Navbar>
   );
@@ -70,7 +73,7 @@ const Navbar = styled.div`
   border-top: 1px solid #eee;
   margin: auto;
   max-width: 580px;
-  z-index : 999;
+  z-index: 999;
 `;
 
 const NavbarItem = styled.div`
@@ -80,6 +83,20 @@ const NavbarItem = styled.div`
   justify-content: center;
   color: #999;
   cursor: pointer;
+  &.active {
+    color: #00aa5b;
+  }
+`;
+
+const NavbarLink = styled(Link)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  cursor: pointer;
+  text-decoration: none;
+
   &.active {
     color: #00aa5b;
   }

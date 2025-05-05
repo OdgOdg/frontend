@@ -7,6 +7,7 @@ import eventImage from "../images/mainPage/event.png";
 import BottomNavbar from "../components/BottomNavbar";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 import SearchWithSuggestions from "./SearchWithSuggestions";
 
@@ -98,7 +99,9 @@ const MainPage: React.FC = () => {
       <Section>
         <SectionHeader>
           <Title>진행중인 축제</Title>
-          <More>전체보기 &gt;</More>
+          <More>
+            <Link to="/eventlist">전체보기 &gt;</Link>
+          </More>
         </SectionHeader>
         <Banner>
           <ArrowLeft onClick={scrollLeft}>
@@ -131,7 +134,9 @@ const MainPage: React.FC = () => {
       <Section>
         <SectionHeader>
           <Title>인천 관광지</Title>
-          <More>전체보기 &gt;</More>
+          <More>
+            <Link to="/toursightlist">전체보기 &gt;</Link>
+          </More>
         </SectionHeader>
         <TouristList>
           {sights.map((sight) => (
@@ -206,6 +211,7 @@ const Title = styled.h2`
 const More = styled.span`
   color: #007bff;
   cursor: pointer;
+  text-decoration: none;
 `;
 
 const GradientOverlayTop = styled.div`
