@@ -10,6 +10,7 @@ import 계양산 from "../../images/MyPage/계양산.jpg";
 import 을왕리해수욕장 from "../../images/MyPage/을왕리해수욕장.jpg";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
+import { useNavigate } from "react-router-dom";
 
 /* styled-components */
 
@@ -129,6 +130,7 @@ const ProfileManagementButton = styled.button`
 /* ------------------------- Component & Types ------------------------- */
 
 const MyProfile: React.FC = () => {
+  const navigate = useNavigate(); // 훅 사용
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/v1/auth/logout", {
@@ -152,7 +154,7 @@ const MyProfile: React.FC = () => {
     <>
       <Header title="마이페이지" />
       <Container>
-        <SettingsIconButton>
+        <SettingsIconButton onClick={() => navigate("/settings")}>
           <IoSettingsSharp size={24} color="#000" />
         </SettingsIconButton>
 
