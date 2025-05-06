@@ -1,55 +1,97 @@
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
-import React from "react";
-import styled from "styled-components";
 
-const events = [
-  {
-    title: "포스코타워 수직 마라톤",
-    location: "포스코타워",
-    date: "2024.8.23 - 8.31",
-    image: "https://cdn.newscj.com/news/photo/202410/3184388_3226436_5326.jpg", // 이미지 URL 대체 필요
-  },
-  {
-    title: "2024 제5회 송도해변축제",
-    location: "송도달빛공원 일원",
-    date: "2024.8.10 - 8.15",
-    image: "https://dxtimes.co.kr/news/data/20230701/p1065582577146468_822_thum.gif",
-  },
-  {
-    title: "2024 제12회 연수 능허대 문화축제",
-    location: "송도달빛공원 및 능허대공원 일원",
-    date: "2024.10.4 - 10.6",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
-  },
-  {
-    title: "2024 제12회 연수 능허대 문화축제",
-    location: "송도달빛공원 및 능허대공원 일원",
-    date: "2024.10.4 - 10.6",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
-  },
-  {
-    title: "2024 제12회 연수 능허대 문화축제",
-    location: "송도달빛공원 및 능허대공원 일원",
-    date: "2024.10.4 - 10.6",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
-  },
-  {
-    title: "2024 제12회 연수 능허대 문화축제",
-    location: "송도달빛공원 및 능허대공원 일원",
-    date: "2024.10.4 - 10.6",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJYYEyhvBuyct_cAPy14fjX24E2gKiEOg6-w&s",
-  },
-];
+interface Event {
+  id: number;
+  title: string;
+  location: string;
+  date: string;
+  image: string;
+}
 
 const EventListPage: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [cursor, setCursor] = useState<number | null>(null);
+  const [hasNext, setHasNext] = useState(true);
+  const loadingRef = useRef(false);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchEvents = useCallback(async () => {
+    if (!hasNext || loadingRef.current) return;
+    loadingRef.current = true;
+
+    try {
+      const res = await fetch(`/api/v1/sights/pagination?cursor=${cursor ?? ""}&limit=6&category=2`);
+      if (!res.ok) throw new Error("이벤트 API 호출 실패");
+
+      const json = await res.json();
+      const newEvents = json.data.map((e: any) => ({
+        id: e.id,
+        title: e.title,
+        location: e.addr1,
+        date: `${e.startDate} ~ ${e.endDate}`,
+        image: e.firstimage,
+      }));
+
+      setEvents((prev) => {
+        const combined = [...prev, ...newEvents];
+        const unique = Array.from(new Map(combined.map((e) => [e.id, e])).values());
+        return unique;
+      });
+
+      if (json.data.length > 0) {
+        const lastId = json.data[json.data.length - 1].id;
+        setCursor(lastId);
+      }
+
+      setHasNext(json.hasNext);
+    } catch (error) {
+      console.error("이벤트 불러오기 오류:", error);
+    } finally {
+      loadingRef.current = false;
+    }
+  }, [cursor, hasNext]);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchEvents();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [fetchEvents]);
+
   return (
     <div>
       <Header title="축제 전체보기" />
       <Container>
-        {events.map((event, index) => (
-          <EventCard key={index}>
-            <Image src={event.image} alt={event.title} />
+        {events.map((event) => (
+          <EventCard key={event.id}>
+            <Image
+              src={event.image || "/fallback.png"}
+              alt={event.title}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/fallback.png";
+              }}
+            />
             <Info>
               <Title>{event.title}</Title>
               <Location>{event.location}</Location>
@@ -57,6 +99,7 @@ const EventListPage: React.FC = () => {
             </Info>
           </EventCard>
         ))}
+        <div ref={observerRef} style={{ height: 1 }} />
       </Container>
       <BottomNavbar />
     </div>
@@ -65,22 +108,21 @@ const EventListPage: React.FC = () => {
 
 export default EventListPage;
 
+// CSS는 그대로 유지
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 20px;
-  /* max-height: 100vh; */
   overflow-y: auto;
   background-color: #f9f9f9;
 
-  /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
-    display: none; /* 웹킷 브라우저에서 스크롤바 숨김 */
+    display: none;
   }
 
-  scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
-  -ms-overflow-style: none; /* Internet Explorer 및 Edge에서 스크롤바 숨김 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 `;
 
 const EventCard = styled.div`
@@ -89,12 +131,6 @@ const EventCard = styled.div`
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  h3 {
-    margin: 0;
-  }
-  p {
-    margin: 8px;
-  }
   transition: transform 0.2s;
 
   &:hover {
