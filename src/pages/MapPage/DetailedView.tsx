@@ -112,7 +112,7 @@ const InfoItem = styled.li`
   align-items: center;
   justify-content: space-between;
   border-bottom: 2px solid grey;
-  padding-bottom : 5px;
+  padding-bottom: 5px;
   font-size: 16px;
   color: black;
 `;
@@ -134,14 +134,21 @@ interface LocationState {
   category: number;
 }
 
-const EventViewAtMap: React.FC = () => {
+interface ReviewType {
+  id: number;
+  sightId: number;
+  content: string;
+  date: string;
+  advantages: string[];
+}
+
+const DetailedView: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation<LocationState | null>();
   const params = useParams<{ id: string }>();
-
   const [site, setSite] = useState<LocationState | null>(state ?? null);
   const [loading, setLoading] = useState(!state);
-
+  const [reviewCount, setReviewCount] = useState<number>(0);
   const [copied, setCopied] = useState(false);
 
   const handleCopyAddress = () => {
@@ -183,6 +190,24 @@ const EventViewAtMap: React.FC = () => {
     }
   }, [params.id, site, navigate]);
 
+  // site.id가 정해지면 리뷰 API 호출해서 개수 설정
+  useEffect(() => {
+    if (site) {
+      fetch(`/api/v1/review/${site.id}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("리뷰 조회 실패");
+          return res.json();
+        })
+        .then((data: ReviewType[]) => {
+          setReviewCount(data.length);
+        })
+        .catch((err) => {
+          console.error(err);
+          setReviewCount(0);
+        });
+    }
+  }, [site]);
+
   if (loading) return <div>로딩 중...</div>;
   if (!site) return <div>잘못된 접근입니다.</div>;
 
@@ -209,7 +234,7 @@ const EventViewAtMap: React.FC = () => {
               <span>12</span>
             </IconBox>
             <IconBox>
-              <span>📝 7</span>
+              <span>📝 {reviewCount}</span>
             </IconBox>
           </IconWrapper>
         </MapHeader>
@@ -221,12 +246,12 @@ const EventViewAtMap: React.FC = () => {
         <ButtonRow>
           <Button onClick={() => window.open("https://kko.kakao.com/aY2KP6sKoN", "_blank")}>
             <BiDirections />
-            길찾기
+            카카오맵 이동
           </Button>
           <Button onClick={() => {}}>
             <FaBookmark />
           </Button>
-          <Button>
+          <Button onClick={() => navigate("/reviewwrite", { state: { site } })}>
             <FaPen />
             리뷰 쓰기
           </Button>
@@ -241,7 +266,7 @@ const EventViewAtMap: React.FC = () => {
             </LeftInfo>
             <FaCopy />
           </InfoItem>
-          <InfoItem>
+          <InfoItem style={{ cursor: "pointer" }} onClick={() => navigate("/reviewread", { state: { site } })}>
             <LeftInfo>
               <FiBookOpen />
               <span>리뷰 보기</span>
@@ -263,4 +288,4 @@ const EventViewAtMap: React.FC = () => {
   );
 };
 
-export default EventViewAtMap;
+export default DetailedView;
