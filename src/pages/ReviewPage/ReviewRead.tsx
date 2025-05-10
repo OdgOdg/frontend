@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /* ───────── styled-components ───────── */
 
@@ -51,6 +52,7 @@ const SummaryValue = styled.div`
 
 const KeywordBoxWrapper = styled.div`
   display: flex;
+  justify-content: center; /* 가로 방향 중앙 정렬 */
   margin: 12px 16px;
   gap: 8px;
 `;
@@ -130,11 +132,25 @@ const Tag = styled.span`
 
 /* ------------------------- Component & Types ------------------------- */
 
-interface ReviewItemProps {
-  userName: string;
-  date: string;
+interface Site {
+  id: number;
+  title: string;
+}
+
+interface Review {
+  id: number;
+  sightId: number;
   content: string;
-  tags?: string[];
+  date: string; // "2025-05-10" 같은 ISO 문자열
+  advantages: string[]; // 태그 리스트
+}
+
+function formatReviewDate(iso: string): string {
+  const d = new Date(iso);
+  const yy = String(d.getFullYear()).slice(-2);
+  const mm = d.getMonth() + 1;
+  const dd = d.getDate();
+  return `${yy}년 ${mm}월 ${dd}일`;
 }
 
 function maskName(name: string): string {
@@ -142,6 +158,10 @@ function maskName(name: string): string {
     return name[0] + "*";
   }
   return name[0] + "*" + name.slice(2);
+}
+
+function truncate(text: string, maxLength: number): string {
+  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 }
 
 /** 개별 리뷰 아이템을 렌더링하는 컴포넌트 */
@@ -168,13 +188,71 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ userName, date, content, tags }
 
 /** 메인 페이지 컴포넌트 */
 const ReviewPage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { site?: Site };
+  const site = state.site;
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const displayTitle = truncate(site.title, 20);
+
+  useEffect(() => {
+    // sightId 기반으로 API 호출
+    fetch(`/api/v1/review/${site.id}`)
+      .then((res) => res.json())
+      .then((data: Review[]) => {
+        setReviews(data);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [site.id]);
+
+  const advantageIconMap: Record<string, string> = {
+    "즐길 거리가 많아요": "🕹️",
+    "사진 찍기 좋아요": "📸",
+    "볼거리가 많아요": "👀",
+    "주차하기 편해요": "🅿️",
+    "대중교통이 편해요": "🚌",
+    "가격이 합리적이에요": "💵",
+    "혼자 가기 좋아요": "🕺",
+    "연인과 가기 좋아요": "👩‍❤️‍👨",
+    "친구와 가기 좋아요": "👫",
+    "가족과 가기 좋아요": "👨‍👩‍👦",
+  };
+
+  // 리뷰가 바뀔 때마다 빈도 계산해서 상위 3개 태그 추출
+  const topKeywords = React.useMemo(() => {
+    const freq: Record<string, number> = {};
+    reviews.forEach((r) =>
+      r.advantages.forEach((tag) => {
+        const key = tag.trim();
+        freq[key] = (freq[key] || 0) + 1;
+      })
+    );
+    return Object.entries(freq)
+      .sort(([, a], [, b]) => b - a) // 빈도 내림차순
+      .slice(0, 3) // 상위 3개
+      .map(([tag]) => tag);
+  }, [reviews]);
+
+  const formatTag = (tag: string) => (advantageIconMap[tag] ? `${advantageIconMap[tag]} ${tag}` : tag);
+
+  if (!state.site) {
+    return <div>잘못된 접근입니다.</div>;
+  }
+
   return (
     <>
       <Header
         title={
           <>
-            <span style={{ color: "#00AA5B", fontSize: "16px" }}>송도센트럴 파크</span>
-            <span style={{ fontSize: "14px" }}>에 대한 리뷰입니다.</span>
+            {/* 잘라진 제목 사용 */}
+            <span style={{ color: "#00AA5B", fontSize: "16px" }}>{displayTitle}</span>
+            <span style={{ fontSize: "14px" }}> 에 대한 리뷰입니다.</span>
           </>
         }
       />
@@ -184,7 +262,7 @@ const ReviewPage: React.FC = () => {
           <SummaryBox>
             <SummaryIcon>📝</SummaryIcon>
             <SummaryLabel>리뷰</SummaryLabel>
-            <SummaryValue>7개</SummaryValue>
+            <SummaryValue>{loading ? "..." : `${reviews.length}개`}</SummaryValue>
           </SummaryBox>
           <SummaryBox>
             <SummaryIcon>❤️</SummaryIcon>
@@ -193,48 +271,34 @@ const ReviewPage: React.FC = () => {
           </SummaryBox>
         </SummaryBoxWrapper>
 
-        {/* 키워드 박스 (사진, 교통, 연인) */}
+        {/* 키워드 박스 (상위 3개) */}
         <KeywordBoxWrapper>
-          <KeywordBox>
-            <KeywordIcon>📷</KeywordIcon>
-            사진찍기 좋아요
-          </KeywordBox>
-          <KeywordBox>
-            <KeywordIcon>🚌</KeywordIcon>
-            대중교통이 편해요
-          </KeywordBox>
-          <KeywordBox>
-            <KeywordIcon>👩‍❤️‍👨</KeywordIcon>
-            연인과 가기 좋아요
-          </KeywordBox>
+          {topKeywords.map((tag) => (
+            <KeywordBox key={tag}>
+              <KeywordIcon>{advantageIconMap[tag]}</KeywordIcon>
+              {tag}
+            </KeywordBox>
+          ))}
         </KeywordBoxWrapper>
 
         {/* 리뷰 목록 */}
         <ReviewList>
-          <ReviewItem
-            userName="김지훈"
-            date="25년 1월 21일"
-            content="학술적으로 건축양식이나 피크닉 즐기기 좋은 공원입니다. 키 크고 예쁜 건물들이 많아서 색다른 건물들을 감상하실 수 있어요. 숲속 산책이나 행사도 종종 열려서 가족 단위로도 많이 방문하더라고요."
-            tags={["📸 사진찍기 좋아요", "🚌 대중교통이 편해요", "💵 가격이 합리적이에요", "👩‍❤️‍👨 연인과 가기 좋아요"]}
-          />
-          <ReviewItem
-            userName="주영준"
-            date="25년 1월 20일"
-            content="직장인으로서 처음 가봤는데 산책하기도 좋고 건물도 너무 예쁘며 힐링하고 왔습니다. 주변에 맛집도 많고, 야경도 볼만하니 퇴근 후 가볍게 둘러보기에도 괜찮습니다."
-            tags={["👀 볼거리가 많아요", "👫 친구와 가기 좋아요"]}
-          />
-          <ReviewItem
-            userName="고해찬"
-            date="25년 3월 1일"
-            content="3.1절 기념으로 부모님과 함께 놀러갔는데 낮에는 공원이 너무 예쁘고 밤에는 야경이 너무 예쁩니다! 제가 캐나다에 갔다온 적이 있는데 그에 못지않은 광활하고 아름다운 공원이에요! 송도 진짜 짱입니다~"
-            tags={["💵 가격이 합리적이에요"]}
-          />
-          <ReviewItem
-            userName="홍동기"
-            date="25년 3월 3일"
-            content="솔직히 그닥 다른 공원들이랑 별 차이점을 못느끼겠음. 역이랑도 그리 가까운 편은 아님. "
-            tags={["🕺 혼자 가기 좋아요"]}
-          />
+          {loading ? (
+            <div>리뷰를 불러오는 중...</div>
+          ) : reviews.length === 0 ? (
+            <div>아직 등록된 리뷰가 없어요.</div>
+          ) : (
+            reviews.map((review) => (
+              <ReviewItem
+                key={review.id}
+                userName="김지훈"
+                date={formatReviewDate(review.date)}
+                content={review.content}
+                // 여기서 tag마다 아이콘을 붙여줌
+                tags={review.advantages.map(formatTag)}
+              />
+            ))
+          )}
         </ReviewList>
       </Container>
       <BottomNavbar />

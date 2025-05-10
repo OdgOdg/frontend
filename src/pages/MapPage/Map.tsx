@@ -249,7 +249,7 @@ const Map: React.FC = () => {
                     상세 정보
                   </button>
                   <a
-                    href="http://localhost:8001/sight/${site.id}"
+                    href="https://map.kakao.com/?map_type=TYPE_MAP&itemId=11376334&q=%EC%9D%B8%EC%B2%9C%EB%8C%80%ED%95%99%EA%B5%90+%EC%86%A1%EB%8F%84%EC%BA%A0%ED%8D%BC%EC%8A%A4&urlLevel=3&urlX=419125&urlY=1077250"
                     target="_blank"
                     style="color:#5085bb;text-decoration:none;font-size:14px;"
                   >
@@ -274,7 +274,7 @@ const Map: React.FC = () => {
               currentOverlayRef.current = null;
             });
             document.getElementById(detailId)?.addEventListener("click", () => {
-              navigate("/eventviewatmap");
+              navigate("/detailedview");
             });
           }, 0);
         });
@@ -374,7 +374,7 @@ const Map: React.FC = () => {
                 상세 정보
               </button>
               <a
-                href="http://localhost:8001/sight/${site.id}"
+                href="https://map.kakao.com/?map_type=TYPE_MAP&itemId=11376334&q=%EC%9D%B8%EC%B2%9C%EB%8C%80%ED%95%99%EA%B5%90+%EC%86%A1%EB%8F%84%EC%BA%A0%ED%8D%BC%EC%8A%A4&urlLevel=3&urlX=419125&urlY=1077250"
                 target="_blank"
                 style="color:#5085bb;text-decoration:none;font-size:14px;"
               >
@@ -398,7 +398,7 @@ const Map: React.FC = () => {
           currentOverlayRef.current = null;
         });
         document.getElementById(detailId)?.addEventListener("click", () => {
-          navigate("/eventviewatmap");
+          navigate("/detailedview");
         });
       }, 0);
     }, 200);
@@ -627,7 +627,7 @@ const Map: React.FC = () => {
                     상세 정보
                   </button>
                   <a
-                    href="http://localhost:8001/sight/${site.id}"
+                    href="https://map.kakao.com/?map_type=TYPE_MAP&itemId=11376334&q=%EC%9D%B8%EC%B2%9C%EB%8C%80%ED%95%99%EA%B5%90+%EC%86%A1%EB%8F%84%EC%BA%A0%ED%8D%BC%EC%8A%A4&urlLevel=3&urlX=419125&urlY=1077250"
                     target="_blank"
                     style="color:#5085bb;text-decoration:none;font-size:14px;"
                   >
@@ -652,7 +652,7 @@ const Map: React.FC = () => {
                       currentOverlayRef.current = null;
                     });
                     document.getElementById(detailId)?.addEventListener("click", () => {
-                      navigate(`/eventviewatmap/${site.id}`, {
+                      navigate(`/detailedview/${site.id}`, {
                         state: {
                           id: site.id,
                           title: site.title,
