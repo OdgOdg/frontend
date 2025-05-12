@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
@@ -45,6 +46,10 @@ const KeywordGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 `;
+
+interface KeywordButtonProps {
+  isSelected: boolean;
+}
 
 const KeywordButton = styled.button<KeywordButtonProps>`
   display: flex;
@@ -98,13 +103,25 @@ const SubmitButton = styled.button`
   }
 `;
 
-/* ------------------------- Component & Types ------------------------- */
+/* ------------------------- Component ------------------------- */
 
-interface KeywordButtonProps {
-  isSelected: boolean;
+interface LocationState {
+  site: { id: number; title: string };
 }
 
 const ReviewForm: React.FC = () => {
+  const navigate = useNavigate();
+  // location.state를 통해 전달된 site 데이터 추출
+  const { state } = useLocation<LocationState>();
+  const site = state?.site;
+  if (!site) {
+    return <div>잘못된 접근입니다.</div>;
+  }
+
+  // site.title이 20자 이상인 경우 잘라서 ... 추가
+  const displayTitle = site.title.length > 20 ? site.title.slice(0, 20) + "..." : site.title;
+
+  // 선택 가능한 키워드 목록
   const leftKeywords = [
     "🕹️ 즐길거리가 많아요",
     "📸 사진찍기 좋아요",
@@ -120,23 +137,56 @@ const ReviewForm: React.FC = () => {
     "👨‍👩‍👦 가족과 가기 좋아요",
   ];
 
-  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+  // flatten array for id mapping
+  const allKeywords = [...leftKeywords, ...rightKeywords];
 
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const [reviewText, setReviewText] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const toggleKeyword = (keyword: string) => {
     setSelectedKeywords((prev) => (prev.includes(keyword) ? prev.filter((k) => k !== keyword) : [...prev, keyword]));
   };
 
-  const handleSubmit = () => {
-    const reviewData = {
-      keywords: selectedKeywords,
-      reviewText,
+  const handleSubmit = async () => {
+    // 1) 키워드 미선택 시 경고 후 탈출
+    if (selectedKeywords.length === 0) {
+      alert("키워드를 최소 하나 이상 선택해주세요!");
+      return;
+    }
+
+    // 2) 기존 로직: advantages 배열 계산
+    const advantages = selectedKeywords
+      .map((kw) => allKeywords.indexOf(kw))
+      .filter((idx) => idx >= 0)
+      .map((idx) => idx + 1);
+
+    const payload = {
+      sightId: site.id,
+      content: reviewText,
+      advantages,
     };
-    console.log("리뷰 데이터:", reviewData);
-    alert("리뷰가 등록되었습니다!");
-    setSelectedKeywords([]);
-    setReviewText("");
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/v1/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message || "리뷰 작성이 완료되었습니다!");
+        navigate(-1);
+      } else {
+        alert(data.message || "리뷰 작성에 실패했습니다.");
+      }
+    } catch {
+      alert("리뷰 작성 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -144,33 +194,22 @@ const ReviewForm: React.FC = () => {
       <Header
         title={
           <>
-            <span style={{ color: "#00AA5B" }}>송도센트럴 파크</span>
-            <span style={{ fontSize: "14px" }}>에 대한 리뷰를 작성해주세요!</span>
+            <span style={{ color: "#00AA5B" }}>{displayTitle}</span>
+            <span style={{ fontSize: "14px" }}> 에 대한 리뷰를 작성해주세요!</span>
           </>
         }
       />
 
       <Container>
-        {/* 상단 컨텐츠 */}
         <div>
           <TopSection>
             <Title>어떤 점이 좋았나요?</Title>
-            <SubTitle>이 곳에 어울리는 키워드를 선택해주세요! (1~5개) </SubTitle>
+            <SubTitle>이 곳에 어울리는 키워드를 선택해주세요!</SubTitle>
           </TopSection>
 
-          {/* 키워드 선택 영역 */}
           <KeywordContainer>
             <KeywordGrid>
-              {leftKeywords.map((keyword) => (
-                <KeywordButton
-                  key={keyword}
-                  isSelected={selectedKeywords.includes(keyword)}
-                  onClick={() => toggleKeyword(keyword)}
-                >
-                  {keyword}
-                </KeywordButton>
-              ))}
-              {rightKeywords.map((keyword) => (
+              {allKeywords.map((keyword) => (
                 <KeywordButton
                   key={keyword}
                   isSelected={selectedKeywords.includes(keyword)}
@@ -182,15 +221,15 @@ const ReviewForm: React.FC = () => {
             </KeywordGrid>
           </KeywordContainer>
 
-          {/* 리뷰 텍스트 작성 */}
           <ReviewTextArea
             placeholder="✏️리뷰를 작성해 주세요!"
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
           />
 
-          {/* 등록 버튼 */}
-          <SubmitButton onClick={handleSubmit}>등록 하기</SubmitButton>
+          <SubmitButton onClick={handleSubmit} disabled={loading}>
+            {loading ? "등록 중..." : "등록 하기"}
+          </SubmitButton>
         </div>
       </Container>
       <BottomNavbar paddingBottom={false} />
