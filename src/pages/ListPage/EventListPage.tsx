@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import styled from "styled-components";
 import BottomNavbar from "../../components/BottomNavbar";
 import Header from "../../components/Header";
+import { useNavigate } from "react-router-dom"; // useNavigate 추가
 
 interface Event {
   id: number;
@@ -12,6 +13,7 @@ interface Event {
 }
 
 const EventListPage: React.FC = () => {
+  const navigate = useNavigate(); // navigate 훅 사용
   const [events, setEvents] = useState<Event[]>([]);
   const [cursor, setCursor] = useState<number | null>(null);
   const [hasNext, setHasNext] = useState(true);
@@ -54,11 +56,19 @@ const EventListPage: React.FC = () => {
     }
   }, [cursor, hasNext]);
 
+  // ✅ 페이지 첫 진입일 때만 fetch
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (events.length === 0) {
+      fetchEvents();
+    }
+  }, [events.length, fetchEvents]);
 
+  // ✅ IntersectionObserver 등록 (events 있을 때만)
   useEffect(() => {
+    if (!observerRef.current || !hasNext) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
@@ -68,23 +78,39 @@ const EventListPage: React.FC = () => {
       { threshold: 1.0 }
     );
 
-    if (observerRef.current) {
-      observer.observe(observerRef.current);
-    }
+    observer.observe(observerRef.current);
 
     return () => {
-      if (observerRef.current) {
-        observer.unobserve(observerRef.current);
-      }
+      observer.disconnect();
     };
-  }, [fetchEvents]);
+  }, [fetchEvents, hasNext]);
+
+  // ✅ 스크롤 위치 복원
+  useEffect(() => {
+    const savedY = sessionStorage.getItem("scrollY");
+    if (savedY !== null) {
+      const offset = Math.max(0, parseInt(savedY) - 100);
+      setTimeout(() => {
+        window.scrollTo(0, offset);
+      }, 100);
+    }
+  }, []);
+
+  // ✅ 스크롤 위치 저장
+  useEffect(() => {
+    return () => {
+      sessionStorage.setItem("scrollY", String(window.scrollY));
+    };
+  }, []);
 
   return (
     <div>
       <Header title="축제 전체보기" />
       <Container>
         {events.map((event) => (
-          <EventCard key={event.id}>
+          <EventCard key={event.id} onClick={() => navigate(`/eventviewatmap/${event.id}`)}>
+            {" "}
+            {/* 클릭 시 상세 페이지로 이동 */}
             <Image
               src={event.image || "/fallback.png"}
               alt={event.title}
@@ -132,6 +158,7 @@ const EventCard = styled.div`
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+  cursor: pointer; /* 카드 클릭 가능하도록 수정 */
 
   &:hover {
     transform: translateY(-5px);
