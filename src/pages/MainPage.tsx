@@ -2,12 +2,10 @@ import styled from "styled-components";
 import { FaHeart } from "react-icons/fa";
 import { MdArticle } from "react-icons/md";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import eventImage from "../images/mainPage/event.png";
-// import sightsImage from "../images/mainPage/sights.png";
 import BottomNavbar from "../components/BottomNavbar";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
-
+import { Link } from "react-router-dom";
 import SearchWithSuggestions from "./SearchWithSuggestions";
 
 const MainPage: React.FC = () => {
@@ -23,19 +21,42 @@ const MainPage: React.FC = () => {
     mapy: number;
     tel: string | null;
   };
+
+  type EventBanner = {
+    id: number;
+    title: string;
+    addr1: string;
+    startDate: string;
+    endDate: string;
+    firstimage: string | null;
+  };
+
+  const [eventBanners, setEventBanners] = useState<EventBanner[]>([]);
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  const fetchEventBanners = async () => {
+    try {
+      const res = await axios.get<{ data: EventBanner[] }>("/api/v1/sights/pagination?cursor=1&limit=3&category=2");
+      setEventBanners(res.data.data);
+    } catch (err) {
+      console.error("이벤트 배너 불러오기 실패", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchEventBanners();
+  }, []);
+
   const randomCursor = useMemo(() => Math.floor(Math.random() * 100), []);
   const [cursor, setCursor] = useState<number>(randomCursor);
-
-  type SightResponse = {
-    data: Sight[];
-    hasNext: boolean;
-  };
   const [sights, setSights] = useState<Sight[]>([]);
-  // const [cursor, setCursor] = useState<number>(1);
   const [hasNext, setHasNext] = useState<boolean>(true);
+
   const fetchSights = async () => {
     try {
-      const res = await axios.get<SightResponse>(`/api/v1/sights/pagination?cursor=1&limit=3&category=1`);
+      const res = await axios.get<{ data: Sight[]; hasNext: boolean }>(
+        `/api/v1/sights/pagination?cursor=${cursor}&limit=3&category=1`
+      );
 
       setSights((prev) => {
         const newData = res.data.data.filter((newSight) => !prev.some((s) => s.id === newSight.id));
@@ -52,29 +73,10 @@ const MainPage: React.FC = () => {
       console.error("관광지 불러오기 실패", err);
     }
   };
+
   useEffect(() => {
     fetchSights();
   }, []);
-
-  const [banners, setBanners] = useState([
-    {
-      image: eventImage,
-      title: "포스코타워 수직 마라톤",
-      location: "포스코타워",
-      date: "2024.8.23 - 8.31",
-      isFavorite: false,
-    },
-    { image: eventImage, title: "두 번째 배너", location: "설명 텍스트", date: "날짜 정보", isFavorite: false },
-    { image: eventImage, title: "세 번째 배너", location: "설명 텍스트", date: "날짜 정보", isFavorite: false },
-  ]);
-
-  const bannerRef = useRef<HTMLDivElement>(null);
-
-  const toggleFavorite = (index: number) => {
-    setBanners((prevBanners) =>
-      prevBanners.map((banner, i) => (i === index ? { ...banner, isFavorite: !banner.isFavorite } : banner))
-    );
-  };
 
   const scrollLeft = () => {
     if (bannerRef.current) {
@@ -95,49 +97,53 @@ const MainPage: React.FC = () => {
         <SearchWithSuggestions />
         <Icon>֎</Icon>
       </MainPageHeader>
+
       <Section>
         <SectionHeader>
           <Title>진행중인 축제</Title>
-          <More>전체보기 &gt;</More>
+          <More>
+            <Link to="/eventlist">전체보기 &gt;</Link>
+          </More>
         </SectionHeader>
         <Banner>
           <ArrowLeft onClick={scrollLeft}>
             <FaChevronLeft />
           </ArrowLeft>
           <BannerWrapper ref={bannerRef}>
-            {banners.slice(0, 3).map((banner, index) => (
-              <BannerItem key={index}>
-                <FavoriteIcon onClick={() => toggleFavorite(index)} $isFavorite={banner.isFavorite}>
-                  <FaHeart />
-                </FavoriteIcon>
-                <BannerImage src={banner.image} alt={banner.title} />
+            {eventBanners.map((banner) => (
+              <BannerItem key={banner.id}>
+                <BannerImage src={banner.firstimage || "/fallback.png"} alt={banner.title} />
                 <BannerText>
                   <h2>{banner.title}</h2>
-                  <p>{banner.location}</p>
-                  <p>{banner.date}</p>
+                  <p>{banner.addr1}</p>
+                  <p>
+                    {banner.startDate} - {banner.endDate}
+                  </p>
                 </BannerText>
                 <GradientOverlayTop />
                 <GradientOverlayBottom />
               </BannerItem>
             ))}
           </BannerWrapper>
-
           <ArrowRight onClick={scrollRight}>
             <FaChevronRight />
           </ArrowRight>
         </Banner>
       </Section>
+
       <Divider />
+
       <Section>
         <SectionHeader>
           <Title>인천 관광지</Title>
-          <More>전체보기 &gt;</More>
+          <More>
+            <Link to="/toursightlist">전체보기 &gt;</Link>
+          </More>
         </SectionHeader>
         <TouristList>
           {sights.map((sight) => (
             <TouristItem key={sight.id}>
               <TouristImage src={sight.firstimage || "/fallback.png"} />
-
               <TouristInfo>
                 <h3>{sight.title}</h3>
                 <p>{sight.tel || "전화번호 없음"}</p>
@@ -155,12 +161,15 @@ const MainPage: React.FC = () => {
           ))}
         </TouristList>
       </Section>
+
       <BottomNavbar />
     </Container>
   );
 };
 
 export default MainPage;
+
+// Styled components 생략 (기존 코드 그대로 유지하면 됩니다)
 
 // Styled Components
 
@@ -206,6 +215,7 @@ const Title = styled.h2`
 const More = styled.span`
   color: #007bff;
   cursor: pointer;
+  text-decoration: none;
 `;
 
 const GradientOverlayTop = styled.div`

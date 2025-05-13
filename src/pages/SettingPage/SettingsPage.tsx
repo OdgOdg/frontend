@@ -4,8 +4,11 @@ import { Switch } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "../../components/Header";
 import BottomNavbar from "../../components/BottomNavbar";
+import { useNavigate } from "react-router-dom";
 
 const SettingsPage: React.FC = () => {
+  const navigate = useNavigate(); // 훅 사용
+
   const [isAlarmOn, setIsAlarmOn] = useState(true);
 
   return (
@@ -19,18 +22,17 @@ const SettingsPage: React.FC = () => {
 
         <Section>
           <SectionTitle>계정 설정</SectionTitle>
-          <SettingItem>비밀번호 & 계정</SettingItem>
+          <SettingItem onClick={() => navigate("/passwordchange")}>비밀번호 & 계정</SettingItem>
           <SettingItem>
             알람 <Switch checked={isAlarmOn} onChange={() => setIsAlarmOn(!isAlarmOn)} />
           </SettingItem>
-          <SettingItem>로그아웃</SettingItem>
         </Section>
 
         <MoreSection>
           <SectionTitle>More</SectionTitle>
           <SettingItem>About us</SettingItem>
           <SettingItem>개인정보 처리방침</SettingItem>
-          <SettingItem>언어 설정</SettingItem>
+          <SettingItem onClick={() => navigate("/languageselection")}>언어 설정</SettingItem>
         </MoreSection>
       </Container>
       <BottomNavbar paddingBottom={false} />
