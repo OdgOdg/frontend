@@ -43,9 +43,13 @@ const AddFriendPage = () => {
           setFriendData(null);
           setError("사용자를 찾을 수 없습니다.");
         }
-      } catch (err) {
+      } catch (err: any) {
         setFriendData(null);
-        setError("사용자를 찾을 수 없습니다.");
+        if (err.response?.status === 401) {
+          setError("로그인이 필요한 서비스입니다.");
+        } else {
+          setError("사용자를 찾을 수 없습니다.");
+        }
       }
     }, 300);
 
