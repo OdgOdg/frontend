@@ -20,7 +20,12 @@ const MainPage: React.FC = () => {
     mapx: number;
     mapy: number;
     tel: string | null;
+    likeCount: number; // 추가
+    reviewCount: number; // 추가
   };
+  
+  const randomCursor = useMemo(() => Math.floor(Math.random() * 100), []);
+  const [cursor, setCursor] = useState<number>(randomCursor);
 
   type EventBanner = {
     id: number;
@@ -150,10 +155,10 @@ const MainPage: React.FC = () => {
                 <Address>{sight.addr1}</Address>
                 <LikesLivewsContainer>
                   <Likes>
-                    <FaHeart color="red" /> 12
+                    <FaHeart color="red" /> {sight.likeCount}
                   </Likes>
                   <Reviews>
-                    <MdArticle /> 12
+                    <MdArticle /> {sight.reviewCount}
                   </Reviews>
                 </LikesLivewsContainer>
               </TouristInfo>
