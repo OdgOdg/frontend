@@ -140,6 +140,7 @@ interface Site {
 interface Review {
   id: number;
   sightId: number;
+  userName: string;
   content: string;
   date: string; // "2025-05-10" 같은 ISO 문자열
   advantages: string[]; // 태그 리스트
@@ -291,7 +292,7 @@ const ReviewPage: React.FC = () => {
             reviews.map((review) => (
               <ReviewItem
                 key={review.id}
-                userName="김지훈"
+                userName={review.userName}
                 date={formatReviewDate(review.date)}
                 content={review.content}
                 // 여기서 tag마다 아이콘을 붙여줌
