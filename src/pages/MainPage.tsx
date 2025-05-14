@@ -7,6 +7,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import SearchWithSuggestions from "./SearchWithSuggestions";
+import itglogo from "../images/ITGLOGO.png";
 
 const MainPage: React.FC = () => {
   type Sight = {
@@ -98,7 +99,9 @@ const MainPage: React.FC = () => {
   return (
     <Container>
       <MainPageHeader>
-        <Logo>ITG</Logo>
+        <Logo>
+          <LogoImage src={itglogo} alt="ITG Logo" />
+        </Logo>
         <SearchWithSuggestions />
         <Icon>֎</Icon>
       </MainPageHeader>
@@ -185,9 +188,16 @@ const MainPageHeader = styled.header`
   padding: 10px;
 `;
 
+
 const Logo = styled.h1`
-  font-size: 24px;
+  font-size: 1px;
   font-weight: bold;
+`;
+
+const LogoImage = styled.img`
+  width: 100px;   
+  height: auto;
+  cursor: pointer;
 `;
 
 const SearchBar = styled.input`

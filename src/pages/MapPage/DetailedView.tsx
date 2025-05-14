@@ -130,6 +130,7 @@ interface LocationState {
   id: number;
   title: string;
   addr1: string;
+  likeCount: number;
   firstimage: string;
   category: number;
 }
@@ -146,10 +147,15 @@ const DetailedView: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation<LocationState | null>();
   const params = useParams<{ id: string }>();
-  const [site, setSite] = useState<LocationState | null>(state ?? null);
+  const [site, setSite] = useState<LocationState | null>(
+    state
+      ? { ...state, likeCount: state.likeCount ?? 0 } // 넘어온 state에 likeCount 없으면 0
+      : null
+  );
   const [loading, setLoading] = useState(!state);
   const [reviewCount, setReviewCount] = useState<number>(0);
   const [copied, setCopied] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   const handleCopyAddress = () => {
     navigator.clipboard
@@ -208,6 +214,77 @@ const DetailedView: React.FC = () => {
     }
   }, [site]);
 
+  // 1) 사이트 로드 완료되면, 로그인된 경우 좋아요 상태 조회
+  useEffect(() => {
+    if (site) {
+      const token = localStorage.getItem("token");
+      if (!token) return; // 로그인 안 됐으면 패스
+
+      fetch(`/api/v1/like?sightId=${site.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("좋아요 상태 조회 실패");
+          return res.json();
+        })
+        // `{ isLiked: boolean }` 형태로 반환된다고 가정
+        .then((data: { isLiked: boolean }) => setIsLiked(data.isLiked))
+        .catch((err) => console.error(err));
+    }
+  }, [site]);
+
+  // 2) 하트 클릭 시 좋아요 토글 함수
+  const handleLikeToggle = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+    if (!site) return;
+
+    const newLiked = !isLiked;
+
+    try {
+      const res = await fetch("/api/v1/like", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sightId: site.id,
+          isLiked: newLiked,
+        }),
+      });
+
+      if (!res.ok) {
+        // 좋아요 취소 시( newLiked === false ) 서버가 400을 리턴하면
+        if (!newLiked && res.status === 400) {
+          // 이 경우는 “삭제 완료”로 간주
+          console.warn("서버가 400을 반환했지만, 삭제 완료로 간주합니다.");
+        } else {
+          // 나머지 에러는 throw
+          const errText = await res.text();
+          throw new Error(`(${res.status}) ${errText}`);
+        }
+      }
+
+      // UI에 반영
+      setIsLiked(newLiked);
+      setSite((prev) =>
+        prev
+          ? {
+              ...prev,
+              likeCount: (prev.likeCount ?? 0) + (newLiked ? +1 : -1),
+            }
+          : prev
+      );
+    } catch (err: any) {
+      console.error("좋아요 처리 중 오류:", err);
+      alert("좋아요 처리 중 오류가 발생했습니다.");
+    }
+  };
+
   if (loading) return <div>로딩 중...</div>;
   if (!site) return <div>잘못된 접근입니다.</div>;
 
@@ -228,10 +305,13 @@ const DetailedView: React.FC = () => {
           <IconWrapper>
             <IconBox>
               <FaHeart
-                style={{ color: "black", cursor: "pointer" }}
-                onClick={() => setSite((site) => ({ ...site!, category: site!.category }))}
+                style={{
+                  color: isLiked ? "red" : "black",
+                  cursor: "pointer",
+                }}
+                onClick={handleLikeToggle}
               />
-              <span>12</span>
+              <span>{site.likeCount}</span>
             </IconBox>
             <IconBox>
               <span>📝 {reviewCount}</span>
