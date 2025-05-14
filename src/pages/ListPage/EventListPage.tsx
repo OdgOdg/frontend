@@ -108,7 +108,7 @@ const EventListPage: React.FC = () => {
       <Header title="축제 전체보기" />
       <Container>
         {events.map((event) => (
-          <EventCard key={event.id} onClick={() => navigate(`/eventviewatmap/${event.id}`)}>
+          <EventCard key={event.id} onClick={() => navigate(`/detailedview/${event.id}`)}>
             {" "}
             {/* 클릭 시 상세 페이지로 이동 */}
             <Image

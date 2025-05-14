@@ -24,9 +24,6 @@ const MainPage: React.FC = () => {
     likeCount: number; // 추가
     reviewCount: number; // 추가
   };
-  
-  const randomCursor = useMemo(() => Math.floor(Math.random() * 100), []);
-  const [cursor, setCursor] = useState<number>(randomCursor);
 
   type EventBanner = {
     id: number;
@@ -188,14 +185,13 @@ const MainPageHeader = styled.header`
   padding: 10px;
 `;
 
-
 const Logo = styled.h1`
   font-size: 1px;
   font-weight: bold;
 `;
 
 const LogoImage = styled.img`
-  width: 100px;   
+  width: 100px;
   height: auto;
   cursor: pointer;
 `;

@@ -130,7 +130,7 @@ const TourSightListPage: React.FC = () => {
       <Header title="관광지 전체보기" />
       <Container>
         {sights.map((sight) => (
-          <EventCard key={sight.id} onClick={() => navigate(`/eventviewatmap/${sight.id}`)}>
+          <EventCard key={sight.id} onClick={() => navigate(`/detailedview/${sight.id}`)}>
             <Image
               src={sight.firstimage || "/fallback.png"}
               alt={sight.title}
