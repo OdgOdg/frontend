@@ -2,22 +2,18 @@ import React from "react";
 import styled from "styled-components";
 import { GoPersonAdd } from "react-icons/go";
 import chatbotImage from "../images/chatbot_icon.jpg";
-
-// title 타입을 React.ReactNode로 변경
-interface HeaderProps {
-  title: React.ReactNode;
-  showAddFriendIcon?: boolean;
-  isChatBotPage?: boolean; // 챗봇 페이지 여부 추가
-}
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false, isChatBotPage = false }) => {
+  const navigate = useNavigate();
+
   return (
     <NavBar>
       <BackButton onClick={() => window.history.back()}>{`<`}</BackButton>
 
       {isChatBotPage ? (
         <ChatBotHeader>
-          <BotImage src={chatbotImage} alt="ChatBot" /> {/* 챗봇 이미지 */}
+          <BotImage src={chatbotImage} alt="ChatBot" />
           <Title>{title}</Title>
           <OnlineStatus>🟢 Online</OnlineStatus>
         </ChatBotHeader>
@@ -27,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ title, showAddFriendIcon = false, isCha
 
       <IconContainer>
         {showAddFriendIcon && (
-          <Icon>
+          <Icon onClick={() => navigate("/addfriend")}>
             <GoPersonAdd />
           </Icon>
         )}
